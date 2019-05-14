@@ -53,4 +53,9 @@ public class Card {
         this.face = face;
         this.suit = suit;
     }
+
+
+    public int value() {
+        return this.face.value();
+    }
 }

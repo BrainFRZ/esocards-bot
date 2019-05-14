@@ -21,7 +21,9 @@ public class Shoe {
         for (int i = 0; i < numDecks; i++) {
             deck = new ArrayList<Card>();
             for (Card.Suit suit : Card.Suit.values()) {
-                deck.add(new Card(face, suit));
+                for (Card.Face face : Card.Face.values()) {
+                    deck.add(new Card(face, suit));
+                }
             }
 
             cards.addAll(deck);
@@ -31,8 +33,8 @@ public class Shoe {
     }
 
 
-    public Card getNext() {
-        return cards.pop();
+    public Card nextCard() {
+        return cards.peek();
     }
 
     public int getNumDecks() {
@@ -45,5 +47,24 @@ public class Shoe {
 
     public int cardsLeft() {
         return cards.size();
+    }
+
+
+    public Card deal(Hand hand) {
+        Card next = cards.pop();
+        hand.addCard(next);
+        return next;
+    }
+
+    public ArrayList<Card> deal(Hand hand, final int handSize) {
+        ArrayList<Card> cardsDealt = new ArrayList<>();
+
+        Card card;
+        for (int i = 0; i < handSize; i++) {
+            card = deal(hand);
+            cardsDealt.add(card);
+        }
+
+        return cardsDealt;
     }
 }
