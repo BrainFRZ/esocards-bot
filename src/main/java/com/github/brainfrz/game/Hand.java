@@ -1,6 +1,5 @@
 package com.github.brainfrz.game;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Hand {
@@ -13,6 +12,13 @@ public class Hand {
         value = 0;
     }
 
+    public Hand(ArrayList<Card> cards) {
+        this();
+        for (Card card : cards) {
+            addCard(card);
+        }
+    }
+
     public Hand(Shoe shoe, final int initialSize) {
         this();
 
@@ -21,7 +27,7 @@ public class Hand {
         }
 
         if (initialSize > shoe.cardsLeft()) {
-            throw new EmptyDeckException(shoe.cardsLeft(), initialSize);
+            throw new EmptyShoeException(shoe.cardsLeft(), initialSize);
         }
 
         Card next;
@@ -34,11 +40,13 @@ public class Hand {
 
     public Hand addCard(final Card card) {
         hand.add(card);
+        value += card.value();
         return this;
     }
 
     public Hand playCard(final Card card) {
         hand.remove(card);
+        value -= card.value();
         return this;
     }
 

@@ -78,6 +78,12 @@ public class Shoe {
     }
 
 
+    public Shoe shuffle() {
+        Collections.shuffle(cards);
+        return this;
+    }
+
+
     public Card nextCard() {
         return cards.peek();
     }
@@ -95,21 +101,47 @@ public class Shoe {
     }
 
 
-    public Card deal(Hand hand) {
-        Card next = cards.pop();
-        hand.addCard(next);
-        return next;
+    /**
+     * Deals the next card from the shoe.
+     *
+     * @return Card dealt
+     */
+    public Card deal() throws EmptyShoeException {
+        if (this.isEmpty()) {
+            throw new EmptyShoeException();
+        }
+        return cards.pop();
     }
 
-    public ArrayList<Card> deal(Hand hand, final int handSize) {
+    public ArrayList<Card> deal(final int handSize) throws EmptyShoeException {
+        if (handSize > cardsLeft()) {
+            throw new EmptyShoeException(cardsLeft(), handSize);
+        }
+
         ArrayList<Card> cardsDealt = new ArrayList<>();
 
         Card card;
         for (int i = 0; i < handSize; i++) {
-            card = deal(hand);
+            card = cards.pop();
             cardsDealt.add(card);
         }
 
         return cardsDealt;
+    }
+
+    public ArrayList<Card> deal(Hand hand, final int handSize) throws EmptyShoeException {
+        if (handSize > cardsLeft()) {
+            throw new EmptyShoeException(cardsLeft(), handSize);
+        }
+
+        ArrayList<Card> cardsDealt = deal(handSize);
+        hand = new Hand(cardsDealt);
+        return cardsDealt;
+    }
+
+    public Card deal(Hand hand) {
+        Card next = deal();
+        hand.addCard(next);
+        return next;
     }
 }

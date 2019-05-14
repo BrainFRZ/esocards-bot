@@ -1,15 +1,15 @@
 package com.github.brainfrz.game;
 
-public class EmptyDeckException extends RuntimeException {
-    public EmptyDeckException() {
+public class EmptyShoeException extends RuntimeException {
+    public EmptyShoeException() {
         super("No cards are left in deck.");
     }
 
-    public EmptyDeckException(int needed) {
+    public EmptyShoeException(int needed) {
         super("No cards are left in deck. " + needed + " are needed.");
     }
 
-    public EmptyDeckException(int left, int needed) {
+    public EmptyShoeException(int left, int needed) {
         super(left + " cards are left in deck. " + needed + " are needed.");
     }
 }
