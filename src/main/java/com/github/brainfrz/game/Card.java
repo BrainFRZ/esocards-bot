@@ -31,13 +31,13 @@ public class Card {
     }
 
     public enum Suit {
-        MOLAG_BAL, DIBELLA, ZENITHAR, SANGUINE;
+        MOLAG_BAL, MARA, ZENITHAR, SANGUINE;
 
         @Override
         public String toString() {
             switch (this) {
                 case MOLAG_BAL: return "Molag Bal"; // Spade
-                case DIBELLA:   return "Dibella";   // Heart
+                case MARA:      return "Mara";      // Heart
                 case ZENITHAR:  return "Zenithar";  // Diamond
                 case SANGUINE:  return "Sanguine";  // Club
                 default:        return "Unknown";
