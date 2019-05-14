@@ -12,20 +12,13 @@ public class Shoe {
     final public static int PLAYERS_PER_DECK = 2;
 
 
-    public Shoe(final int numDecks) {
+    public Shoe(final int players) {
         if (numDecks <= 0) {
             throw new IllegalArgumentException("Negative number of decks: " + numDecks);
         }
 
-        this.cards = new Stack<>();
-        this.numDecks = numDecks;
-        this.players = 0;
-
-        for (int i = 0; i < numDecks; i++) {
-            addDeck();
-        }
-
-        Collections.shuffle(cards);
+        this.players = players;
+        fillShoe();
     }
 
     public ArrayList<Card> addDeck() {
@@ -81,6 +74,7 @@ public class Shoe {
         for (int i = 0; i < numDecks; i++) {
             addDeck();
         }
+        Collections.shuffle(cards);
     }
 
 
