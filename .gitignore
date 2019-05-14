@@ -24,3 +24,7 @@ hs_err_pid*
 
 # Token files
 *BOT_TOKEN
+
+# Localized files
+.gradle/*
+.idea/*
