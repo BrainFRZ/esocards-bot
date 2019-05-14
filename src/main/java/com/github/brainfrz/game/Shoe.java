@@ -7,6 +7,9 @@ import java.util.Stack;
 public class Shoe {
     private Stack<Card> cards;
     private int numDecks;
+    private int players;
+
+    final public static int PLAYERS_PER_DECK = 2;
 
 
     public Shoe(final int numDecks) {
@@ -16,20 +19,68 @@ public class Shoe {
 
         this.cards = new Stack<>();
         this.numDecks = numDecks;
+        this.players = 0;
 
-        ArrayList<Card> deck;
         for (int i = 0; i < numDecks; i++) {
-            deck = new ArrayList<Card>();
-            for (Card.Suit suit : Card.Suit.values()) {
-                for (Card.Face face : Card.Face.values()) {
-                    deck.add(new Card(face, suit));
-                }
-            }
-
-            cards.addAll(deck);
+            addDeck();
         }
 
         Collections.shuffle(cards);
+    }
+
+    public ArrayList<Card> addDeck() {
+        ArrayList<Card> deck;
+        deck = new ArrayList<Card>();
+        for (Card.Suit suit : Card.Suit.values()) {
+            for (Card.Face face : Card.Face.values()) {
+                deck.add(new Card(face, suit));
+            }
+        }
+
+        cards.addAll(deck);
+        return deck;
+    }
+
+    public void emptyShoe() {
+        cards = new Stack<>();
+        numDecks = 0;
+    }
+
+
+    public boolean addPlayer() {
+        boolean addedDeck = false;
+
+        players += 1;
+        if (players % 2 == 0) {
+            fillShoe();
+            addedDeck = true;
+        }
+
+        return addedDeck;
+    }
+
+    public boolean dropPlayer() {
+        if (players <= 0) {
+            return false;
+        }
+
+        boolean removedDeck = false;
+
+        players -= 1;
+        if (players % 2 == 0 && numDecks > 0) {
+            fillShoe();
+            removedDeck = true;
+        }
+
+        return removedDeck;
+    }
+
+    private void fillShoe() {
+        cards = new Stack<>();
+        numDecks = players / PLAYERS_PER_DECK;
+        for (int i = 0; i < numDecks; i++) {
+            addDeck();
+        }
     }
 
 
