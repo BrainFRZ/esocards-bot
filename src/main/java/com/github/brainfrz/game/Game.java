@@ -6,6 +6,7 @@ public class Game {
     private int numPlayers;
     private ArrayList<Hand> hands;
     private Shoe shoe;
+    private Shoe discard;
     private int handSize;
     private ArrayList<Card> table;  // Optional table for games that require it.
 
@@ -13,6 +14,7 @@ public class Game {
     public Game(int players) {
         numPlayers = players;
         shoe = new Shoe(players);
+        discard = new Shoe(0);
         hands = new ArrayList<>();
         table = new ArrayList<>();
     }
@@ -21,6 +23,7 @@ public class Game {
         this(0);
     }
 
+/*
     public Game(Hand initialHand) {
         this(1);
         this.handSize = initialHand.size();
@@ -36,6 +39,7 @@ public class Game {
         }
         this.hands = hands;
     }
+ */
 
 
     public ArrayList<Card> dealTable(final int cards) throws EmptyShoeException {
@@ -61,14 +65,14 @@ public class Game {
         return handSize;
     }
 
-    public void addHand(Hand hand) {
-        shoe.addPlayer();
+    public boolean addHand(Hand hand) {
         hands.add(hand);
+        return shoe.addPlayer();
     }
 
     public boolean removeHand(Hand hand) {
-        shoe.dropPlayer();
-        return hands.remove(hand);
+        hands.remove(hand);
+        return shoe.dropPlayer();
     }
 
 
@@ -85,6 +89,10 @@ public class Game {
         return shoe;
     }
 
+    public int shoeSize() {
+        return shoe.getNumDecks();
+    }
+
 
     public int playerTotal() {
         return numPlayers;
@@ -96,5 +104,6 @@ public class Game {
         shoe = new Shoe(0);
         hands = new ArrayList<>();
         table = new ArrayList<>();
+        discard = new Shoe(0);
     }
 }

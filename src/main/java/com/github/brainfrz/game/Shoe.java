@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
 
-public class Shoe {
+class Shoe {
     private Stack<Card> cards;
     private int numDecks;
     private int players;
 
-    final public static int PLAYERS_PER_DECK = 2;
+    final static int PLAYERS_PER_DECK = 1;
 
 
-    public Shoe(final int players) {
+    Shoe(final int players) {
         if (numDecks < 0) {
             throw new IllegalArgumentException("Negative number of decks: " + numDecks);
         } else if (numDecks == 0) {
@@ -23,7 +23,7 @@ public class Shoe {
         fillShoe();
     }
 
-    public ArrayList<Card> addDeck() {
+    ArrayList<Card> addDeck() {
         ArrayList<Card> deck;
         deck = new ArrayList<Card>();
         for (Card.Suit suit : Card.Suit.values()) {
@@ -36,13 +36,13 @@ public class Shoe {
         return deck;
     }
 
-    public void emptyShoe() {
+    void emptyShoe() {
         cards = new Stack<>();
         numDecks = 0;
     }
 
 
-    public boolean addPlayer() {
+    boolean addPlayer() {
         boolean addedDeck = false;
 
         players += 1;
@@ -54,7 +54,7 @@ public class Shoe {
         return addedDeck;
     }
 
-    public boolean dropPlayer() {
+    boolean dropPlayer() {
         if (players <= 0) {
             return false;
         }
@@ -83,25 +83,25 @@ public class Shoe {
     }
 
 
-    public Shoe shuffle() {
+    Shoe shuffle() {
         Collections.shuffle(cards);
         return this;
     }
 
 
-    public Card nextCard() {
+    Card nextCard() {
         return cards.peek();
     }
 
-    public int getNumDecks() {
+    int getNumDecks() {
         return numDecks;
     }
 
-    public boolean isEmpty() {
+    boolean isEmpty() {
         return cards.isEmpty();
     }
 
-    public int cardsLeft() {
+    int cardsLeft() {
         return cards.size();
     }
 
@@ -111,14 +111,14 @@ public class Shoe {
      *
      * @return Card dealt
      */
-    public Card deal() throws EmptyShoeException {
+    Card deal() throws EmptyShoeException {
         if (this.isEmpty()) {
             throw new EmptyShoeException();
         }
         return cards.pop();
     }
 
-    public ArrayList<Card> deal(final int handSize) throws EmptyShoeException {
+    ArrayList<Card> deal(final int handSize) throws EmptyShoeException {
         if (handSize > cardsLeft()) {
             throw new EmptyShoeException(cardsLeft(), handSize);
         }
@@ -134,7 +134,7 @@ public class Shoe {
         return cardsDealt;
     }
 
-    public ArrayList<Card> deal(Hand hand, final int handSize) throws EmptyShoeException {
+    ArrayList<Card> deal(Hand hand, final int handSize) throws EmptyShoeException {
         if (handSize > cardsLeft()) {
             throw new EmptyShoeException(cardsLeft(), handSize);
         }
@@ -144,9 +144,15 @@ public class Shoe {
         return cardsDealt;
     }
 
-    public Card deal(Hand hand) {
+    Card deal(Hand hand) {
         Card next = deal();
         hand.addCard(next);
         return next;
+    }
+
+
+    Shoe discard(Shoe discard, Card card) {
+        discard.cards.push(card);
+        return discard;
     }
 }

@@ -1,10 +1,10 @@
 package com.github.brainfrz.game;
 
-public class Card {
+class Card {
     public enum Face {
         CHAMPION, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, DAGGER, ARMOR, SWORD;
 
-        public int value() {
+        int value() {
             if (this == CHAMPION) {
                 return 11; // Ace equivalent
             } else  if (this.ordinal() >= TWO.ordinal() && this.ordinal() <= TEN.ordinal())
@@ -14,7 +14,7 @@ public class Card {
             }
         }
 
-        public String faceName() {
+        String faceName() {
             int cardNumber = this.ordinal() + 1;
 
             if (cardNumber >= 2 && cardNumber <= 10) {
@@ -30,7 +30,7 @@ public class Card {
         }
     }
 
-    public enum Suit {
+    enum Suit {
         MOLAG_BAL, MARA, ZENITHAR, SANGUINE;
 
         @Override
@@ -46,16 +46,16 @@ public class Card {
     }
 
 
-    public final Face face;
-    public final Suit suit;
+    final Face face;
+    final Suit suit;
 
-    public Card(final Face face, final Suit suit) {
+    Card(final Face face, final Suit suit) {
         this.face = face;
         this.suit = suit;
     }
 
 
-    public int value() {
+    int value() {
         return this.face.value();
     }
 

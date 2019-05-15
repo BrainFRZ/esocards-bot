@@ -70,6 +70,20 @@ public class BotEngine {
     }
 
 
+    public int shoeSize() {
+        return game.shoeSize();
+    }
+
+    public String shoeSizeStr() {
+        int size = shoeSize();
+        if (size == 1) {
+            return "There is now 1 deck in play.";
+        } else {
+            return "There are now " + size + " decks in play.";
+        }
+    }
+
+
     public void setHandSize(int size) {
         if (handSize < 0) {
             throw new IllegalArgumentException("Negative hand size: " + handSize);

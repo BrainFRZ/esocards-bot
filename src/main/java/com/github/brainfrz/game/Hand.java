@@ -4,12 +4,10 @@ import java.util.ArrayList;
 
 public class Hand {
     private ArrayList<Card> hand;
-    private int value;
 
 
     public Hand() {
         hand = new ArrayList<>();
-        value = 0;
     }
 
     public Hand(final ArrayList<Card> cards) {
@@ -33,20 +31,17 @@ public class Hand {
         Card next;
         for (int i = 0; i < initialSize; i++) {
             next = shoe.deal(this);
-            value += next.value();
         }
     }
 
 
-    public Hand addCard(final Card card) {
+    Hand addCard(final Card card) {
         hand.add(card);
-        value += card.value();
         return this;
     }
 
-    public Hand playCard(final Card card) {
+    Hand playCard(final Card card) {
         hand.remove(card);
-        value -= card.value();
         return this;
     }
 
@@ -59,7 +54,7 @@ public class Hand {
         return (Card[])hand.toArray();
     }
 
-    public Card get(final int i) {
+    Card get(final int i) {
         return hand.get(i);
     }
 
@@ -72,6 +67,10 @@ public class Hand {
     }
 
     public int value() {
+        int value = 0;
+        for (Card card : hand) {
+            value += card.value();
+        }
         return value;
     }
 

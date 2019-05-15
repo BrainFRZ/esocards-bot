@@ -34,8 +34,8 @@ public class ESOCardsBot {
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards add")) {
-                    && event.getMessage().getContent().equalsIgnoreCase("!add")) {
+//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards join")) {
+                    && event.getMessage().getContent().equalsIgnoreCase("!join")) {
                 addUser(event, event.getMessageAuthor().asUser().get(), engine);
             }
         });
@@ -89,16 +89,28 @@ public class ESOCardsBot {
 
 
     private static void addUser(MessageCreateEvent event, User user, BotEngine engine) {
+        int oldDecks = engine.shoeSize();
         if (engine.addPlayer(user)) {
             event.getChannel().sendMessage(user.getMentionTag() + " just joined the game!");
+
+            int newDecks = engine.shoeSize();
+            if (oldDecks != newDecks) {
+                event.getChannel().sendMessage("A new deck has been added to the game. " + engine.shoeSizeStr());
+            }
         } else {
             event.getChannel().sendMessage(user.getMentionTag() + " is already playing.");
         }
     }
 
     private static void removeUser(MessageCreateEvent event, User user, BotEngine engine) {
+        int oldDecks = engine.shoeSize();
         if (engine.dropPlayer(user)) {
             event.getChannel().sendMessage(user.getMentionTag() + " just left the game. Awwwww...");
+
+            int newDecks = engine.shoeSize();
+            if (oldDecks != newDecks) {
+                event.getChannel().sendMessage("A deck has been removed from the game. " + engine.shoeSizeStr());
+            }
         } else {
             event.getChannel().sendMessage(user.getMentionTag() + " isn't playing anyway.");
         }
