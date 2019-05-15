@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
 
-class Shoe {
+public class Shoe {
     private Stack<Card> cards;
     private int numDecks;
     private int players;
@@ -50,7 +50,7 @@ class Shoe {
     public boolean refreshPlayers() {
         boolean addedDeck = false;
 
-        if (players % 2 == 0) {
+        if (players % PLAYERS_PER_DECK == 0) {
             fillShoe();
             addedDeck = true;
         }

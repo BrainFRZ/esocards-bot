@@ -92,7 +92,6 @@ public class ESOCardsBot {
         int oldDecks = engine.shoeSize();
         System.out.println("Old shoe size" + oldDecks);
         if (engine.addPlayer(user)) {
-            System.out.println("Shoe size: " + engine.shoeSize());
             event.getChannel().sendMessage(user.getMentionTag() + " just joined the game!");
 
             int newDecks = engine.shoeSize();
