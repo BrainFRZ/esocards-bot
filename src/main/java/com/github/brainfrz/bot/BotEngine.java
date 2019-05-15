@@ -11,12 +11,12 @@ import java.util.Map;
 
 public class BotEngine {
     private Game game;
-    private Map<Player, Hand> players;
+    private ArrayList<Player> players;
     private int handSize;
 
     public BotEngine() {
         game = new Game();
-        players = new HashMap<>();
+        players = new ArrayList<>();
         handSize = 0;
     }
 
@@ -25,25 +25,26 @@ public class BotEngine {
         this.handSize = handSize;
     }
 
-    public BotEngine(Player player, int handSize) {
+    public BotEngine(Player player) {
         this();
+        handSize = player.HAND.size();
         Hand hand = new Hand(game.getShoe(), handSize);
-        players.put(player, hand);
+        players.add(player);
     }
 
 
-    public Map<Player,Hand> addPlayer(User user) {
-        Player newPlayer = new Player(user);
+    public ArrayList<Player> addPlayer(User user) {
+        Hand hand = new Hand(game.getShoe(), handSize);
+        Player newPlayer = new Player(user, hand);
 
         if (players == null) {
-            players = new HashMap<>();
+            players = new ArrayList<>();
         }
         if (game == null) {
             game = new Game(1);
         }
 
-        Hand hand = new Hand(game.getShoe(), handSize);
-        players.put(newPlayer, hand);
+        players.add(newPlayer);
         return players;
     }
 
@@ -61,11 +62,11 @@ public class BotEngine {
     }
 
 
-    public ArrayList<Player> getPlayers() {
-        return new ArrayList<Player>(players.keySet());
+    public ArrayList<Player> roster() {
+        return players;
     }
 
-    public int getPlayersSize() {
+    public int rosterSize() {
         return players.size();
     }
 }
