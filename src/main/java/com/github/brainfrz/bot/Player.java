@@ -5,12 +5,18 @@ import org.javacord.api.entity.user.User;
 import com.github.brainfrz.game.Hand;
 
 public class Player {
-    final public User USER;
-    final public Hand HAND;
+    public User user;
+    public Hand hand;
 
     public Player(User user, Hand hand) {
-        USER = user;
-        HAND = hand;
+        this.user = user;
+        this.hand = hand;
+    }
+
+    public Hand dealHand(Hand hand) {
+        Hand oldHand = this.hand;
+        this.hand = hand;
+        return oldHand;
     }
 
     @Override
@@ -24,6 +30,6 @@ public class Player {
         }
 
         Player p2 = (Player)player2;
-        return this.USER == p2.USER;
+        return this.user.equals(p2.user);
     }
 }

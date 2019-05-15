@@ -112,6 +112,10 @@ public class Game {
     }
 
 
+    public void discard(Hand pile) {
+    }
+
+
     public void reset() {
         shoe = new Shoe(0);
         hands = new ArrayList<>();

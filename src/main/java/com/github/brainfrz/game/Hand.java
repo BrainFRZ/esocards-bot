@@ -17,6 +17,11 @@ public class Hand {
         }
     }
 
+    public Hand(Hand hand2) {
+        this.hand = hand2.hand;
+    }
+
+
     public Hand(final Shoe shoe, final int initialSize) {
         this();
 

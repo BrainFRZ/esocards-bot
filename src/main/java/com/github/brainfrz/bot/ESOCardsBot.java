@@ -4,7 +4,6 @@ import com.github.brainfrz.game.EmptyShoeException;
 import com.github.brainfrz.game.Hand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
-import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.permission.Permissions;
@@ -132,7 +131,7 @@ public class ESOCardsBot {
         MessageBuilder builder = new MessageBuilder();
         builder.append("The following Guardians are playing cards:").appendNewLine();
         for (Player player : roster) {
-            builder.append("\t").append(player.USER.getMentionTag()).appendNewLine();
+            builder.append("\t").append(player.user.getMentionTag()).appendNewLine();
         }
 
         builder.send(event.getChannel());

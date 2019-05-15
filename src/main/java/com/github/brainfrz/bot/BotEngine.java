@@ -62,8 +62,8 @@ public class BotEngine {
         Player player;
         for (int i = 0; i < players.size() && !playerDropped; i++) {
             player = players.get(i);
-            if (leftUser.equals(player.USER)) {
-                game.removeHand(player.HAND);
+            if (leftUser.equals(player.user)) {
+                game.removeHand(player.hand);
                 players.remove(player);
                 users.remove(leftUser);
                 playerDropped = true;
@@ -71,14 +71,14 @@ public class BotEngine {
         }
 
         if (playerDropped) {
+            game.reset();
             game.fillShoe(users.size());
-            players = new ArrayList<>();
 
-            for (User user : users) {
+            for (Player p : players) {
                 Hand hand = new Hand(game.getShoe(), handSize);
-                player = new Player(user, hand);
-                players.add(player);
+                Hand oldHand = p.dealHand(hand);
                 game.addHand(hand);
+                game.discard(oldHand);
             }
         }
 
@@ -116,8 +116,8 @@ public class BotEngine {
         Player player;
         for (Player value : players) {
             player = value;
-            if (user.equals(player.USER)) {
-                return player.HAND;
+            if (user.equals(player.user)) {
+                return player.hand;
             }
         }
         return new Hand();

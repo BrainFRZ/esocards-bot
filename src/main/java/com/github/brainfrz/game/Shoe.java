@@ -126,4 +126,11 @@ class Shoe {
         discard.cards.push(card);
         return discard;
     }
+
+    Shoe discard(Shoe discard, Hand pile) {
+        for (Card card : pile.hand()) {
+            discard.cards.push(card);
+        }
+        return discard;
+    }
 }
