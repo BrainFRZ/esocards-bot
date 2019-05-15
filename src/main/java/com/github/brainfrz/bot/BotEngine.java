@@ -24,13 +24,6 @@ public class BotEngine {
 
 
     public boolean addPlayer(User newUser) {
-        if (users == null) {
-            users = new ArrayList<>();
-        }
-        if (game == null) {
-            game = new Game(0);
-        }
-
         if (users.indexOf(newUser) == -1) {
             boolean addedDeck = game.newPlayerAddsDeck();
             users.add(newUser);
@@ -41,21 +34,22 @@ public class BotEngine {
                 game.fillShoe(users.size());
 
                 for (User user : users) {
-                    Hand hand = new Hand(game.getShoe(), handSize);
-                    Player newPlayer = new Player(newUser, hand);
-                    players.add(newPlayer);
-                    game.addHand(hand);
+                    initializePlayerFor(user);
                 }
             } else {
-                Hand hand = new Hand(game.getShoe(), handSize);
-                Player newPlayer = new Player(newUser, hand);
-                players.add(newPlayer);
-                game.addHand(hand);
+                initializePlayerFor(newUser);
             }
 
             return true;
         }
         return false;
+    }
+
+    private void initializePlayerFor(User user) {
+        Hand hand = new Hand(game.getShoe(), handSize);
+        Player newPlayer = new Player(user, hand);
+        players.add(newPlayer);
+        game.addHand(hand);
     }
 
     public boolean dropPlayer(User leftUser) {

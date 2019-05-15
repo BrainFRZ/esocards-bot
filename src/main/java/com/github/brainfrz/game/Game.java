@@ -9,7 +9,7 @@ public class Game {
     private int handSize;
     private ArrayList<Card> table;  // Optional table for games that require it.
 
-    final static int PLAYERS_PER_DECK = 1;
+    final static int PLAYERS_PER_DECK = 2;
 
 
     public Game(int numPlayers) {
