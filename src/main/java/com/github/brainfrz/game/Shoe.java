@@ -70,7 +70,10 @@ public class Shoe {
 
     private void fillShoe() {
         cards = new Stack<>();
-        numDecks = players / PLAYERS_PER_DECK;
+        numDecks = (int)Math.ceil(players / (double)PLAYERS_PER_DECK);
+        if (numDecks == 0) {
+            numDecks = 1;
+        }
         for (int i = 0; i < numDecks; i++) {
             addDeck();
         }

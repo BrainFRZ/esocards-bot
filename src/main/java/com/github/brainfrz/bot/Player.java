@@ -8,8 +8,8 @@ public class Player {
     final public User USER;
     final public Hand HAND;
 
-    public Player(User user, Hand hand) {
+    public Player(User user) {
         USER = user;
-        HAND = hand;
+        HAND = new Hand();
     }
 }

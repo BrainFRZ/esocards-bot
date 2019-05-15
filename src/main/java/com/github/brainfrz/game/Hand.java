@@ -12,14 +12,14 @@ public class Hand {
         value = 0;
     }
 
-    public Hand(ArrayList<Card> cards) {
+    public Hand(final ArrayList<Card> cards) {
         this();
         for (Card card : cards) {
             addCard(card);
         }
     }
 
-    public Hand(Shoe shoe, final int initialSize) {
+    public Hand(final Shoe shoe, final int initialSize) {
         this();
 
         if (initialSize <= 0) {

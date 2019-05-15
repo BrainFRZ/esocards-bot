@@ -21,12 +21,20 @@ public class Game {
         this(0);
     }
 
-    public Game(int players, int handSize) {
-        this(players);
-        this.handSize = handSize;
-        for (int i = 0; i < players; i++) {
-            hands.add(new Hand(shoe, handSize));
+    public Game(Hand initialHand) {
+        this(1);
+        this.handSize = initialHand.size();
+        hands.add(initialHand);
+    }
+
+    public Game(ArrayList<Hand> hands) {
+        this(hands.size());
+        if (hands.isEmpty()) {
+            handSize = 0;
+        } else {
+            handSize = hands.get(0).size();
         }
+        this.hands = hands;
     }
 
 
@@ -61,6 +69,10 @@ public class Game {
 
     public void shuffleShoe() {
         shoe.shuffle();
+    }
+
+    public Shoe getShoe() {
+        return shoe;
     }
 
 
