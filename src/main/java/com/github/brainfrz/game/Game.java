@@ -3,7 +3,6 @@ package com.github.brainfrz.game;
 import java.util.ArrayList;
 
 public class Game {
-    private int numPlayers;
     private ArrayList<Hand> hands;
     private Shoe shoe;
     private Shoe discard;
@@ -11,10 +10,8 @@ public class Game {
     private ArrayList<Card> table;  // Optional table for games that require it.
 
 
-    public Game(int players) {
-        numPlayers = players;
-        shoe = new Shoe(players);
-        shoe.fillShoe();
+    public Game(int numPlayers) {
+        shoe = new Shoe(numPlayers);
         discard = new Shoe(0);
         hands = new ArrayList<>();
         table = new ArrayList<>();
@@ -66,9 +63,13 @@ public class Game {
         return handSize;
     }
 
+    public void drawInitialHand(Hand hand) {
+        hands.add(hand);
+    }
+
     public boolean addHand(Hand hand) {
         hands.add(hand);
-        return shoe.refreshPlayers();
+        return shoe.addPlayer();
     }
 
     public boolean removeHand(Hand hand) {
@@ -78,7 +79,7 @@ public class Game {
 
 
     public void resetShoe() {
-        shoe = new Shoe(numPlayers);
+        shoe = new Shoe(playerTotal());
     }
 
 
@@ -96,12 +97,11 @@ public class Game {
 
 
     public int playerTotal() {
-        return numPlayers;
+        return hands.size();
     }
 
 
     public void reset() {
-        numPlayers = 0;
         shoe = new Shoe(0);
         hands = new ArrayList<>();
         table = new ArrayList<>();

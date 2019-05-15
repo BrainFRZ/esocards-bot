@@ -36,13 +36,21 @@ public class BotEngine {
         if (players == null) {
             players = new ArrayList<>();
         }
-        if (game == null || game.playerTotal() == 0) {
+        if (game == null) {
+            game = new Game(0);
+        }
+
+        if (game.playerTotal() == 0) {
             game = new Game(1);
+            Hand hand = new Hand(game.getShoe(), handSize);
+            Player newPlayer = new Player(user, hand);
+            players.add(newPlayer);
+            game.drawInitialHand(hand);
+            return true;
         }
 
         Hand hand = new Hand(game.getShoe(), handSize);
         Player newPlayer = new Player(user, hand);
-
         if (players.indexOf(newPlayer) == -1) {
             players.add(newPlayer);
             game.addHand(hand);

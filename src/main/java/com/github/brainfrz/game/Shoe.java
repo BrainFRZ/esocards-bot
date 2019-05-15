@@ -40,16 +40,17 @@ public class Shoe {
     }
 
     void reshoe(Shoe discard) {
-        for (Card card : discard.cards) {
+        while (!discard.cards.isEmpty()) {
             cards.push(discard.cards.pop());
         }
         Collections.shuffle(cards);
     }
 
 
-    public boolean refreshPlayers() {
+    public boolean addPlayer() {
         boolean addedDeck = false;
 
+        players += 1;
         if (players % PLAYERS_PER_DECK == 0) {
             fillShoe();
             addedDeck = true;
@@ -66,7 +67,7 @@ public class Shoe {
         boolean removedDeck = false;
 
         players -= 1;
-        if (players % 2 == 0 && numDecks > 0) {
+        if (players % PLAYERS_PER_DECK == 0 && numDecks > 0) {
             fillShoe();
             removedDeck = true;
         }
