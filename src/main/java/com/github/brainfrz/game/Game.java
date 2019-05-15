@@ -61,6 +61,14 @@ public class Game {
         return handSize;
     }
 
+    public void addHand(Hand hand) {
+        hands.add(hand);
+    }
+
+    public boolean removeHand(Hand hand) {
+        return hands.remove(hand);
+    }
+
 
     public void resetShoe() {
         shoe = new Shoe(numPlayers);

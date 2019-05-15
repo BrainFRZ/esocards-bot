@@ -45,7 +45,26 @@ public class BotEngine {
         }
 
         players.add(newPlayer);
+        game.addHand(hand);
         return players;
+    }
+
+    public boolean dropPlayer(User user) {
+        if (players.isEmpty()) {
+            return false;
+        }
+
+        Player player;
+        for (int i = 0; i < players.size(); i++) {
+            player = players.get(i);
+            if (user.equals(player.USER)) {
+                game.removeHand(player.HAND);
+                players.remove(player);
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

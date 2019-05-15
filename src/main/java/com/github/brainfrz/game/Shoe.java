@@ -13,8 +13,10 @@ public class Shoe {
 
 
     public Shoe(final int players) {
-        if (numDecks <= 0) {
+        if (numDecks < 0) {
             throw new IllegalArgumentException("Negative number of decks: " + numDecks);
+        } else if (numDecks == 0) {
+            numDecks = 1;
         }
 
         this.players = players;

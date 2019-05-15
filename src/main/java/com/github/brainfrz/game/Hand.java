@@ -22,7 +22,7 @@ public class Hand {
     public Hand(final Shoe shoe, final int initialSize) {
         this();
 
-        if (initialSize <= 0) {
+        if (initialSize < 0) {
             throw new IllegalArgumentException("Negative number of cards dealt to hand.");
         }
 
