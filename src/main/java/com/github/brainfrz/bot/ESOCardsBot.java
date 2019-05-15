@@ -90,18 +90,19 @@ public class ESOCardsBot {
 
     private static void addUser(MessageCreateEvent event, User user, BotEngine engine) {
         int oldDecks = engine.shoeSize();
-        System.out.println("Old shoe size" + oldDecks);
         if (engine.addPlayer(user)) {
             event.getChannel().sendMessage(user.getMentionTag() + " just joined the game!");
 
             int newDecks = engine.shoeSize();
             if (oldDecks != newDecks) {
                 event.getChannel().sendMessage("A new deck has been added to the game. " + engine.shoeSizeStr());
-                event.getChannel().sendMessage("There are " + engine.rosterSize() + " players.");
             }
+            event.getChannel().sendMessage("There are " + engine.rosterSize() + " players.");
         } else {
             event.getChannel().sendMessage(user.getMentionTag() + " is already playing.");
         }
+
+        System.out.println("There are " + engine.game.cardsLeft() + " cards left.");
     }
 
     private static void removeUser(MessageCreateEvent event, User user, BotEngine engine) {

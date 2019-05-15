@@ -9,72 +9,86 @@ import java.util.ArrayList;
 
 
 public class BotEngine {
-    private Game game;
+    public Game game;
+    private ArrayList<User> users;
     private ArrayList<Player> players;
     private int handSize;
 
     public BotEngine() {
         game = new Game();
+        users = new ArrayList<>();
         players = new ArrayList<>();
 //        handSize = 0;
         handSize = 5;
     }
 
-    public BotEngine(int handSize) {
-        this();
-        this.handSize = handSize;
-    }
 
-    public BotEngine(Player player) {
-        this();
-        handSize = player.HAND.size();
-        players.add(player);
-    }
-
-
-    public boolean addPlayer(User user) {
-        if (players == null) {
-            players = new ArrayList<>();
+    public boolean addPlayer(User newUser) {
+        if (users == null) {
+            users = new ArrayList<>();
         }
         if (game == null) {
             game = new Game(0);
         }
 
-        if (game.playerTotal() == 0) {
-            game = new Game(1);
-            Hand hand = new Hand(game.getShoe(), handSize);
-            Player newPlayer = new Player(user, hand);
-            players.add(newPlayer);
-            game.drawInitialHand(hand);
-            return true;
-        }
+        if (users.indexOf(newUser) == -1) {
+            boolean addedDeck = game.newPlayerAddsDeck();
+            users.add(newUser);
+            game = new Game(users.size());
+            players = new ArrayList<>();
 
-        Hand hand = new Hand(game.getShoe(), handSize);
-        Player newPlayer = new Player(user, hand);
-        if (players.indexOf(newPlayer) == -1) {
-            players.add(newPlayer);
-            game.addHand(hand);
+            if (addedDeck) {
+                game.fillShoe(users.size());
+
+                for (User user : users) {
+                    Hand hand = new Hand(game.getShoe(), handSize);
+                    Player newPlayer = new Player(newUser, hand);
+                    players.add(newPlayer);
+                    game.addHand(hand);
+                }
+            } else {
+                Hand hand = new Hand(game.getShoe(), handSize);
+                Player newPlayer = new Player(newUser, hand);
+                players.add(newPlayer);
+                game.addHand(hand);
+            }
+
             return true;
         }
         return false;
     }
 
-    public boolean dropPlayer(User user) {
-        if (players.isEmpty()) {
+    public boolean dropPlayer(User leftUser) {
+        if (players.isEmpty() || users.indexOf(leftUser) == -1) {
             return false;
         }
 
+        boolean droppedDeck = game.leftPlayerDropsDeck();
+        boolean playerDropped = false;
         Player player;
-        for (int i = 0; i < players.size(); i++) {
+        for (int i = 0; i < players.size() && !playerDropped; i++) {
             player = players.get(i);
-            if (user.equals(player.USER)) {
+            if (leftUser.equals(player.USER)) {
                 game.removeHand(player.HAND);
                 players.remove(player);
-                return true;
+                users.remove(leftUser);
+                playerDropped = true;
             }
         }
 
-        return false;
+        if (playerDropped) {
+            game.fillShoe(users.size());
+            players = new ArrayList<>();
+
+            for (User user : users) {
+                Hand hand = new Hand(game.getShoe(), handSize);
+                player = new Player(user, hand);
+                players.add(player);
+                game.addHand(hand);
+            }
+        }
+
+        return playerDropped;
     }
 
 
@@ -125,12 +139,7 @@ public class BotEngine {
     }
 
     public boolean isPlaying(User user) {
-        for (Player player : players) {
-            if (user.equals(player.USER)) {
-                return true;
-            }
-        }
-        return false;
+        return (users.indexOf(user) != -1);
     }
 
 

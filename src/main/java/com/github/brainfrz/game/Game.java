@@ -9,6 +9,8 @@ public class Game {
     private int handSize;
     private ArrayList<Card> table;  // Optional table for games that require it.
 
+    final static int PLAYERS_PER_DECK = 1;
+
 
     public Game(int numPlayers) {
         shoe = new Shoe(numPlayers);
@@ -67,19 +69,20 @@ public class Game {
         hands.add(hand);
     }
 
-    public boolean addHand(Hand hand) {
+    public void addHand(Hand hand) {
         hands.add(hand);
-        return shoe.addPlayer();
+    }
+
+    public boolean newPlayerAddsDeck() {
+        return (hands.size() % PLAYERS_PER_DECK == PLAYERS_PER_DECK - 1);
     }
 
     public boolean removeHand(Hand hand) {
-        hands.remove(hand);
-        return shoe.dropPlayer();
+        return hands.remove(hand);
     }
 
-
-    public void resetShoe() {
-        shoe = new Shoe(playerTotal());
+    public boolean leftPlayerDropsDeck() {
+        return (hands.size() % PLAYERS_PER_DECK == 1);
     }
 
 
@@ -93,6 +96,14 @@ public class Game {
 
     public int shoeSize() {
         return shoe.getNumDecks();
+    }
+
+    public void fillShoe(final int players) {
+        shoe.fillShoe(players);
+    }
+
+    public int cardsLeft() {
+        return shoe.cardsLeft();
     }
 
 

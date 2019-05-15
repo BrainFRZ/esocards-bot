@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
 
-public class Shoe {
+class Shoe {
     private Stack<Card> cards;
     private int numDecks;
-    private int players;
 
-    final static int PLAYERS_PER_DECK = 1;
 
 
     Shoe(final int players) {
@@ -17,8 +15,7 @@ public class Shoe {
             throw new IllegalArgumentException("Negative number of decks: " + numDecks);
         }
 
-        this.players = players;
-        fillShoe();
+        fillShoe(players);
     }
 
     ArrayList<Card> addDeck() {
@@ -47,37 +44,9 @@ public class Shoe {
     }
 
 
-    public boolean addPlayer() {
-        boolean addedDeck = false;
-
-        players += 1;
-        if (players % PLAYERS_PER_DECK == 0) {
-            fillShoe();
-            addedDeck = true;
-        }
-
-        return addedDeck;
-    }
-
-    boolean dropPlayer() {
-        if (players <= 0) {
-            return false;
-        }
-
-        boolean removedDeck = false;
-
-        players -= 1;
-        if (players % PLAYERS_PER_DECK == 0 && numDecks > 0) {
-            fillShoe();
-            removedDeck = true;
-        }
-
-        return removedDeck;
-    }
-
-    void fillShoe() {
+    void fillShoe(final int players) {
         cards = new Stack<>();
-        numDecks = (int)Math.ceil(players / (double)PLAYERS_PER_DECK);
+        numDecks = (int)Math.ceil(players / (double)Game.PLAYERS_PER_DECK);
         for (int i = 0; i < numDecks; i++) {
             addDeck();
         }
@@ -103,7 +72,7 @@ public class Shoe {
         return cards.isEmpty();
     }
 
-    int cardsLeft() {
+    public int cardsLeft() {
         return cards.size();
     }
 
