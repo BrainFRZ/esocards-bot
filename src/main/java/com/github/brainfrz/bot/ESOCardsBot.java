@@ -1,5 +1,6 @@
 package com.github.brainfrz.bot;
 
+import com.github.brainfrz.game.EmptyShoeException;
 import com.github.brainfrz.game.Hand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
@@ -33,31 +34,45 @@ public class ESOCardsBot {
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards add")) {
+//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards add")) {
+                    && event.getMessage().getContent().equalsIgnoreCase("!add")) {
                 addUser(event, event.getMessageAuthor().asUser().get(), engine);
             }
         });
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards leave")) {
+//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards leave")) {
+                    && event.getMessage().getContent().equalsIgnoreCase("!leave")) {
                 removeUser(event, event.getMessageAuthor().asUser().get(), engine);
             }
         });
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards roster")) {
+//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards roster")) {
+                    && event.getMessage().getContent().equalsIgnoreCase("!roster")) {
                 printRoster(event, event.getMessageAuthor().asUser().get(), engine);
             }
         });
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards hand")) {
+//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards hand")) {
+                    && event.getMessage().getContent().equalsIgnoreCase("!hand")) {
                 tellHand(event, event.getMessageAuthor().asUser().get(), engine);
             }
         });
+
+        api.addMessageCreateListener(event -> {
+            String message = event.getMessage().getContent().toLowerCase();
+            if (!event.getMessageAuthor().isBotUser()
+//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards table")) {
+                    && message.regionMatches(true, 0, "!table", 0, 6)) {
+                doTable(event, event.getMessageAuthor().asUser().get(), engine);
+            }
+        });
+
 
         // Print the invite url of your bot:
         // https://discordapp.com/oauth2/authorize?client_id=577728737391673344&scope=bot&permissions=2048
@@ -89,6 +104,7 @@ public class ESOCardsBot {
         }
     }
 
+
     private static void printRoster(MessageCreateEvent event, User user, BotEngine engine) {
         ArrayList<Player> roster = engine.roster();
 
@@ -107,6 +123,7 @@ public class ESOCardsBot {
         builder.send(event.getChannel());
     }
 
+
     private static void tellHand(MessageCreateEvent event, User user, BotEngine engine) {
         if (!engine.isPlaying(user)) {
             event.getChannel().sendMessage(user.getMentionTag() + " isn't playing. Come join!");
@@ -120,6 +137,54 @@ public class ESOCardsBot {
             user.sendMessage("Your hand is empty. Deal another.");
         } else {
             user.sendMessage("You have the following hand:\n" + hand);
+        }
+    }
+
+
+    private static void doTable(MessageCreateEvent event, User user, BotEngine engine) {
+        String message = event.getMessageContent().toLowerCase();
+
+        if (message.equals("!table")) {
+            showTable(event, user, engine);
+        } else if (message.matches("^!table \\d+$")) {
+            dealTable(event, user, engine);
+        } else if (message.equalsIgnoreCase("!table clear")) {
+            clearTable(event, user, engine);
+        } else {
+            event.getChannel().sendMessage("Invalid usage. Type `!eso-cards help table` for help.");
+        }
+    }
+
+    private static void showTable(MessageCreateEvent event, User user, BotEngine engine) {
+        if (engine.getTable().isEmpty()) {
+            event.getChannel().sendMessage("There are no cards on the table.");
+        } else {
+            event.getChannel().sendMessage("The following cards are on the table:\n"
+                    + engine.getTable().tabbedString());
+        }
+    }
+
+    private static void dealTable(MessageCreateEvent event, User user, BotEngine engine) {
+        String message = event.getMessageContent();
+        int cardsDealt = Integer.parseInt(message.substring(7));
+
+        try {
+            engine.dealTable(cardsDealt);
+            event.getChannel()
+                    .sendMessage(user.getMentionTag() + " deals " + cardsDealt + " cards to the table:\n"
+                                    + engine.getTable().tabbedString());
+        } catch (EmptyShoeException e) {
+            event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
+                    "Type `!eso-cards reshoe` to reset the discard pile.");
+        }
+    }
+
+    public static void clearTable(MessageCreateEvent event, User user, BotEngine engine) {
+        boolean cleared = engine.clearTable();
+        if (cleared) {
+            event.getChannel().sendMessage(user.getMentionTag() + " cleared the table.");
+        } else {
+            event.getChannel().sendMessage("There are no cards on the table.");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.github.brainfrz.bot;
 
+import com.github.brainfrz.game.EmptyShoeException;
 import com.github.brainfrz.game.Game;
 import com.github.brainfrz.game.Hand;
 import org.javacord.api.entity.user.User;
@@ -108,5 +109,24 @@ public class BotEngine {
             }
         }
         return false;
+    }
+
+
+    public Hand getTable() {
+        return new Hand(game.table());
+    }
+
+    public Hand dealTable(final int cards) throws EmptyShoeException {
+        game.dealTable(cards);
+        return getTable();
+    }
+
+    public boolean clearTable() {
+        if (game.table().isEmpty()) {
+            return false;
+        } else {
+            game.clearTable();
+            return true;
+        }
     }
 }

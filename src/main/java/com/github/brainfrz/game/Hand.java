@@ -84,4 +84,12 @@ public class Hand {
         }
         return builder.toString();
     }
+
+    public String tabbedString() {
+        StringBuilder builder = new StringBuilder();
+        for (Card card : hand) {
+            builder.append("\t").append(card).append("\n");
+        }
+        return builder.toString();
+    }
 }
