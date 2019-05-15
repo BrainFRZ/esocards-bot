@@ -90,12 +90,15 @@ public class ESOCardsBot {
 
     private static void addUser(MessageCreateEvent event, User user, BotEngine engine) {
         int oldDecks = engine.shoeSize();
+        System.out.println("Old shoe size" + oldDecks);
         if (engine.addPlayer(user)) {
+            System.out.println("Shoe size: " + engine.shoeSize());
             event.getChannel().sendMessage(user.getMentionTag() + " just joined the game!");
 
             int newDecks = engine.shoeSize();
             if (oldDecks != newDecks) {
                 event.getChannel().sendMessage("A new deck has been added to the game. " + engine.shoeSizeStr());
+                event.getChannel().sendMessage("There are " + engine.rosterSize() + " players.");
             }
         } else {
             event.getChannel().sendMessage(user.getMentionTag() + " is already playing.");

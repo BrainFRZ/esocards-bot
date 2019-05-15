@@ -15,8 +15,6 @@ class Shoe {
     Shoe(final int players) {
         if (numDecks < 0) {
             throw new IllegalArgumentException("Negative number of decks: " + numDecks);
-        } else if (numDecks == 0) {
-            numDecks = 1;
         }
 
         this.players = players;
@@ -41,11 +39,17 @@ class Shoe {
         numDecks = 0;
     }
 
+    void reshoe(Shoe discard) {
+        for (Card card : discard.cards) {
+            cards.push(discard.cards.pop());
+        }
+        Collections.shuffle(cards);
+    }
 
-    boolean addPlayer() {
+
+    public boolean refreshPlayers() {
         boolean addedDeck = false;
 
-        players += 1;
         if (players % 2 == 0) {
             fillShoe();
             addedDeck = true;
@@ -70,12 +74,9 @@ class Shoe {
         return removedDeck;
     }
 
-    private void fillShoe() {
+    void fillShoe() {
         cards = new Stack<>();
         numDecks = (int)Math.ceil(players / (double)PLAYERS_PER_DECK);
-        if (numDecks == 0) {
-            numDecks = 1;
-        }
         for (int i = 0; i < numDecks; i++) {
             addDeck();
         }

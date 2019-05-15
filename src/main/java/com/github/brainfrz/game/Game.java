@@ -14,6 +14,7 @@ public class Game {
     public Game(int players) {
         numPlayers = players;
         shoe = new Shoe(players);
+        shoe.fillShoe();
         discard = new Shoe(0);
         hands = new ArrayList<>();
         table = new ArrayList<>();
@@ -67,7 +68,7 @@ public class Game {
 
     public boolean addHand(Hand hand) {
         hands.add(hand);
-        return shoe.addPlayer();
+        return shoe.refreshPlayers();
     }
 
     public boolean removeHand(Hand hand) {
