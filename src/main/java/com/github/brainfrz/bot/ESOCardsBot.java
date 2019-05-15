@@ -74,8 +74,11 @@ public class ESOCardsBot {
 
 
     private static void addUser(MessageCreateEvent event, User user, BotEngine engine) {
-        event.getChannel().sendMessage(user.getMentionTag() + " just joined the game!");
-        engine.addPlayer(user);
+        if (engine.addPlayer(user)) {
+            event.getChannel().sendMessage(user.getMentionTag() + " just joined the game!");
+        } else {
+            event.getChannel().sendMessage(user.getMentionTag() + " is already playing.");
+        }
     }
 
     private static void removeUser(MessageCreateEvent event, User user, BotEngine engine) {

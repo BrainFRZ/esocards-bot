@@ -31,7 +31,7 @@ public class BotEngine {
     }
 
 
-    public ArrayList<Player> addPlayer(User user) {
+    public boolean addPlayer(User user) {
         Hand hand = new Hand(game.getShoe(), handSize);
         Player newPlayer = new Player(user, hand);
 
@@ -42,9 +42,12 @@ public class BotEngine {
             game = new Game(1);
         }
 
-        players.add(newPlayer);
-        game.addHand(hand);
-        return players;
+        if (players.indexOf(newPlayer) == -1) {
+            players.add(newPlayer);
+            game.addHand(hand);
+            return true;
+        }
+        return false;
     }
 
     public boolean dropPlayer(User user) {
