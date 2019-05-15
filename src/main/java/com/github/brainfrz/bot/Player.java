@@ -10,7 +10,7 @@ public class Player {
 
     public Player(User user, Hand hand) {
         USER = user;
-        HAND = new Hand();
+        HAND = hand;
     }
 
     @Override
@@ -24,7 +24,6 @@ public class Player {
         }
 
         Player p2 = (Player)player2;
-        System.out.println(p2.USER.getMentionTag() + " is a player.");
         return this.USER == p2.USER;
     }
 }

@@ -67,7 +67,21 @@ public class Hand {
         return hand.size();
     }
 
+    public boolean isEmpty() {
+        return hand.isEmpty();
+    }
+
     public int value() {
         return value;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Card card : hand) {
+            builder.append(card).append("\n");
+        }
+        return builder.toString();
     }
 }

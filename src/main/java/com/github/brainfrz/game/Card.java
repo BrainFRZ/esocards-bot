@@ -58,4 +58,10 @@ public class Card {
     public int value() {
         return this.face.value();
     }
+
+
+    @Override
+    public String toString() {
+        return (face + " of " + suit);
+    }
 }

@@ -62,10 +62,12 @@ public class Game {
     }
 
     public void addHand(Hand hand) {
+        shoe.addPlayer();
         hands.add(hand);
     }
 
     public boolean removeHand(Hand hand) {
+        shoe.dropPlayer();
         return hands.remove(hand);
     }
 

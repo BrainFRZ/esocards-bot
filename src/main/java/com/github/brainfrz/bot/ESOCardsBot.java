@@ -1,5 +1,6 @@
 package com.github.brainfrz.bot;
 
+import com.github.brainfrz.game.Hand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.message.MessageAuthor;
@@ -51,6 +52,12 @@ public class ESOCardsBot {
             }
         });
 
+        api.addMessageCreateListener(event -> {
+            if (!event.getMessageAuthor().isBotUser()
+                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards hand")) {
+                tellHand(event, event.getMessageAuthor().asUser().get(), engine);
+            }
+        });
 
         // Print the invite url of your bot:
         // https://discordapp.com/oauth2/authorize?client_id=577728737391673344&scope=bot&permissions=2048
@@ -95,5 +102,21 @@ public class ESOCardsBot {
         }
 
         builder.send(event.getChannel());
+    }
+
+    private static void tellHand(MessageCreateEvent event, User user, BotEngine engine) {
+        if (!engine.isPlaying(user)) {
+            event.getChannel().sendMessage(user.getMentionTag() + " isn't playing. Come join!");
+            return;
+        }
+
+        event.getChannel().sendMessage(user.getMentionTag() + " just checked their hand.");
+
+        Hand hand = engine.getUserHand(user);
+        if (hand.isEmpty()) {
+            user.sendMessage("Your hand is empty. Deal another.");
+        } else {
+            user.sendMessage("You have the following hand:\n" + hand);
+        }
     }
 }

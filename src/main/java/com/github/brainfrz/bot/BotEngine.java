@@ -5,8 +5,6 @@ import com.github.brainfrz.game.Hand;
 import org.javacord.api.entity.user.User;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class BotEngine {
@@ -17,7 +15,8 @@ public class BotEngine {
     public BotEngine() {
         game = new Game();
         players = new ArrayList<>();
-        handSize = 0;
+//        handSize = 0;
+        handSize = 5;
     }
 
     public BotEngine(int handSize) {
@@ -28,7 +27,6 @@ public class BotEngine {
     public BotEngine(Player player) {
         this();
         handSize = player.HAND.size();
-        Hand hand = new Hand(game.getShoe(), handSize);
         players.add(player);
     }
 
@@ -80,6 +78,17 @@ public class BotEngine {
         return handSize;
     }
 
+    public Hand getUserHand(User user) {
+        Player player;
+        for (Player value : players) {
+            player = value;
+            if (user.equals(player.USER)) {
+                return player.HAND;
+            }
+        }
+        return new Hand();
+    }
+
 
     public ArrayList<Player> roster() {
         return players;
@@ -87,5 +96,14 @@ public class BotEngine {
 
     public int rosterSize() {
         return players.size();
+    }
+
+    public boolean isPlaying(User user) {
+        for (Player player : players) {
+            if (user.equals(player.USER)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
