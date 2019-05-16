@@ -86,6 +86,29 @@ public class BotEngine {
     }
 
 
+    /**
+     * Deals the given number of cards to the hand.
+     * @param user Discord User requesting the deal
+     * @param handSize Number of cards to be dealt
+     * @return Cards that were dealt
+     */
+    Hand dealHand(User user, int handSize) {
+        return game.dealHand(handSize, getPlayer(user).hand);
+    }
+
+    /**
+     * Discards the User's previous hand and deals them a new hand.
+     * @param user Discord User requesting the deal
+     * @param handSize Number of cards to be dealt
+     * @return User's new hand
+     */
+    Hand dealNewHand(User user, int handSize) {
+        Player player = getPlayer(user);
+        game.discard(player.hand);
+        return dealHand(user, handSize);
+    }
+
+
     public int shoeSize() {
         return game.shoeSize();
     }

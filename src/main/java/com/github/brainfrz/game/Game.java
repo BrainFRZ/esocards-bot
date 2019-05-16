@@ -7,16 +7,18 @@ public class Game {
     private Shoe shoe;
     private Shoe discard;
     private int handSize;
-    private ArrayList<Card> table;  // Optional table for games that require it.
+    private Hand table;  // Optional table for games that require it.
 
     final static int PLAYERS_PER_DECK = 1;
+    final static int DEFAULT_HAND_SIZE = 5;
 
 
     public Game(int numPlayers) {
         shoe = new Shoe(numPlayers);
         discard = new Shoe(0);
         hands = new ArrayList<>();
-        table = new ArrayList<>();
+        table = new Hand();
+        handSize = DEFAULT_HAND_SIZE;
     }
 
     public Game() {
@@ -24,7 +26,7 @@ public class Game {
     }
 
 
-    public ArrayList<Card> dealTable(final int cards) throws EmptyShoeException {
+    public Hand dealTable(final int cards) throws EmptyShoeException {
         Card nextCard;
         for (int i = 0; i < cards; i++) {
             nextCard = shoe.deal();
@@ -34,16 +36,30 @@ public class Game {
     }
 
     public void clearTable() {
-        table = new ArrayList<>();
+        table.clear();
     }
 
-    public ArrayList<Card> table() {
+    public Hand table() {
         return table;
+    }
+
+
+    public Hand dealHand(final int cards, final Hand hand) {
+        return shoe.deal(hand, cards);
+    }
+
+    public void discard(Hand pile) {
+        discard.addAll(pile);
+        pile.clear();
     }
 
 
     public int setHandSize(int size) {
         handSize = size;
+        return handSize;
+    }
+
+    public int getHandSize() {
         return handSize;
     }
 
@@ -90,14 +106,10 @@ public class Game {
     }
 
 
-    public void discard(Hand pile) {
-    }
-
-
     public void reset() {
-        shoe = new Shoe(0);
-        hands = new ArrayList<>();
-        table = new ArrayList<>();
-        discard = new Shoe(0);
+        shoe.emptyShoe();
+        hands.clear();
+        table.clear();
+        discard.emptyShoe();
     }
 }

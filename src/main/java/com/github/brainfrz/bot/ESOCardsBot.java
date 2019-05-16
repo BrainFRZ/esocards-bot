@@ -1,5 +1,6 @@
 package com.github.brainfrz.bot;
 
+import com.github.brainfrz.game.Card;
 import com.github.brainfrz.game.EmptyShoeException;
 import com.github.brainfrz.game.Hand;
 
@@ -74,6 +75,15 @@ public class ESOCardsBot {
         });
 
         api.addMessageCreateListener(event -> {
+            String message = event.getMessage().getContent().toLowerCase();
+            if (!event.getMessageAuthor().isBotUser()
+//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards draw")) {
+                    && message.regionMatches(true, 0, "!draw", 0, 5)) {
+                doDraw(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
 //                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards left")) {
                     && event.getMessage().getContent().equalsIgnoreCase("!cards left")) {
@@ -110,8 +120,6 @@ public class ESOCardsBot {
         } else {
             ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " is already playing.");
         }
-
-        System.out.println("There are " + ev.engine.game.cardsLeft() + " cards left.");
     }
 
     private static void removeUser(BotEvent ev) {
@@ -135,7 +143,7 @@ public class ESOCardsBot {
 
         if (roster.isEmpty()) {
             ev.event.getChannel().sendMessage("No one is playing cards right now. " +
-                    "Be the first by typing `!eso-cards add`!");
+                    "Be the first by typing `!eso-cards join`!");
             return;
         }
 
@@ -149,20 +157,25 @@ public class ESOCardsBot {
     }
 
 
-    private static void tellHand(BotEvent ev) {
-        if (!ev.engine.isPlaying(ev.user)) {
-            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
-            return;
+    private static void tellHand(BotEvent ev, boolean silent) {
+        if (!silent) {
+            if (!ev.engine.isPlaying(ev.user)) {
+                ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
+                return;
+            }
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " just checked their hand.");
         }
-
-        ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " just checked their hand.");
 
         Hand hand = ev.engine.getPlayer(ev.user).hand;
         if (hand.isEmpty()) {
             ev.user.sendMessage("Your hand is empty. Deal another.");
         } else {
-            ev.user.sendMessage("You have the following hand:\n" + hand);
+            ev.user.sendMessage("You have the following hand:\n" + hand.indexedString(true));
         }
+    }
+
+    private static void tellHand(BotEvent ev) {
+        tellHand(ev, false);
     }
 
 
@@ -212,6 +225,80 @@ public class ESOCardsBot {
         } else {
             ev.event.getChannel().sendMessage("There are no cards on the table.");
         }
+    }
+
+
+    public static void doDraw(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        if (!ev.engine.isPlaying(ev.user)) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
+            return;
+        }
+
+        if (message.equals("!draw") || (message.length() == 7 && message.charAt(6) == '1')) {
+            dealOneCard(ev);
+        } else if (message.matches("^!draw new( hand)?")) {
+            dealNewHand(ev);
+        } else if (message.matches("^!draw \\d+$")) {
+            dealCards(ev);
+        } else {
+            ev.event.getChannel().sendMessage("Invalid usage. Type `!eso-cards help draw` for help.");
+        }
+    }
+
+    private static void dealOneCard(BotEvent ev) {
+        String message = ev.event.getMessageContent();
+
+        try {
+            ev.engine.dealHand(ev.user, 1);   // throws EmptyShoeException if there aren't enough cards
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " draws a card from the shoe.");
+            tellHand(ev, true);
+        } catch (EmptyShoeException e) {
+            ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
+                    "Type `!eso-cards reshoe` to reset the discard pile.");
+        }
+    }
+
+    private static void dealCards(BotEvent ev) {
+        String message = ev.event.getMessageContent();
+        int cardsDealt = Integer.parseInt(message.substring(6));
+
+        try {
+            ev.engine.dealHand(ev.user, cardsDealt);   // throws EmptyShoeException if there aren't enough cards
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " draws " + cardsDealt
+                            + " cards from the shoe.");
+            tellHand(ev, true);
+        } catch (EmptyShoeException e) {
+            ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
+                    "Type `!eso-cards reshoe` to reset the discard pile.");
+        }
+    }
+
+    public static void dealNewHand(BotEvent ev) {
+        String message = ev.event.getMessageContent();
+        int cardsDealt = ev.engine.game.getHandSize();
+
+        try {
+            ev.engine.dealNewHand(ev.user, cardsDealt); // throws EmptyShoeException if there aren't enough cards
+        } catch (EmptyShoeException e) {
+            ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
+                    "Type `!eso-cards reshoe` to reset the discard pile.");
+            return;
+        }
+
+        if (ev.engine.getPlayer(ev.user).hand.isEmpty()) {
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " draws " + cardsDealt
+                            + " new cards from the shoe.");
+        } else {
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " sets down their cards in the discard" +
+                            " pile and draws " + cardsDealt + " new ones from the shoe.");
+        }
+        tellHand(ev, true);
     }
 
 

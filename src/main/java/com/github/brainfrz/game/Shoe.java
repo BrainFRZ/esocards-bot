@@ -84,12 +84,12 @@ class Shoe extends Stack<Card> {
         return pop();
     }
 
-    ArrayList<Card> deal(final int handSize) throws EmptyShoeException {
+    Hand deal(final int handSize) throws EmptyShoeException {
         if (handSize > cardsLeft()) {
             throw new EmptyShoeException(cardsLeft(), handSize);
         }
 
-        ArrayList<Card> cardsDealt = new ArrayList<>();
+        Hand cardsDealt = new Hand();
 
         Card card;
         for (int i = 0; i < handSize; i++) {
@@ -100,13 +100,21 @@ class Shoe extends Stack<Card> {
         return cardsDealt;
     }
 
-    ArrayList<Card> deal(Hand hand, final int handSize) throws EmptyShoeException {
+    /**
+     * Deals the given number of cards to the hand and removes them from this shoe.
+     *
+     * @param hand Hand receiving the cards
+     * @param handSize Number of cards to be dealt
+     * @return Hand of cards dealt
+     * @throws EmptyShoeException Thrown if there aren't enough cards left in the shoe
+     */
+    Hand deal(Hand hand, final int handSize) throws EmptyShoeException {
         if (handSize > cardsLeft()) {
             throw new EmptyShoeException(cardsLeft(), handSize);
         }
 
-        ArrayList<Card> cardsDealt = deal(handSize);
-        hand = new Hand(cardsDealt);
+        Hand cardsDealt = deal(handSize);
+        hand.addAll(cardsDealt);
         return cardsDealt;
     }
 

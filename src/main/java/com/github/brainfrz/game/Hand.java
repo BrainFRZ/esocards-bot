@@ -15,7 +15,8 @@ public class Hand extends ArrayList<Card> {
     }
 
     public Hand(Hand hand2) {
-        this(new ArrayList(hand2));
+        this();
+        this.addAll(hand2);
     }
 
 
@@ -68,7 +69,7 @@ public class Hand extends ArrayList<Card> {
             if (tabbed) {
                 builder.append("\t");
             }
-            builder.append(i).append(".\t").append(this.get(i)).append("\n");
+            builder.append(i+1).append(".\t").append(this.get(i)).append("\n");
         }
         return builder.toString();
     }
