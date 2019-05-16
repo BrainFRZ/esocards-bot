@@ -1,24 +1,21 @@
 package com.github.brainfrz.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class Hand {
-    private ArrayList<Card> hand;
-
+public class Hand extends ArrayList<Card> {
 
     public Hand() {
-        hand = new ArrayList<>();
+        super();
     }
 
     public Hand(final ArrayList<Card> cards) {
         this();
-        for (Card card : cards) {
-            addCard(card);
-        }
+        this.addAll(cards);
     }
 
     public Hand(Hand hand2) {
-        this.hand = hand2.hand;
+        this(new ArrayList(hand2));
     }
 
 
@@ -40,39 +37,9 @@ public class Hand {
     }
 
 
-    Hand addCard(final Card card) {
-        hand.add(card);
-        return this;
-    }
-
-    Hand playCard(final Card card) {
-        hand.remove(card);
-        return this;
-    }
-
-
-    public ArrayList<Card> hand() {
-        return hand;
-    }
-
-    public Card[] toArray() {
-        return (Card[])hand.toArray();
-    }
-
-    Card get(final int i) {
-        return hand.get(i);
-    }
-
-    public int size() {
-        return hand.size();
-    }
-
-    public boolean isEmpty() {
-        return hand.isEmpty();
-    }
-
     public int value() {
         int value = 0;
+        Card[] hand = (Card[])this.toArray();
         for (Card card : hand) {
             value += card.value();
         }
@@ -83,6 +50,7 @@ public class Hand {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+        Card[] hand = (Card[])this.toArray();
         for (Card card : hand) {
             builder.append(card).append("\n");
         }
@@ -91,6 +59,7 @@ public class Hand {
 
     public String tabbedString() {
         StringBuilder builder = new StringBuilder();
+        Card[] hand = (Card[])this.toArray();
         for (Card card : hand) {
             builder.append("\t").append(card).append("\n");
         }

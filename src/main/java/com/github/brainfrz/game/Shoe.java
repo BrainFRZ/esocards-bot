@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
 
-class Shoe {
-    private Stack<Card> cards;
+class Shoe extends Stack<Card> {
     private int numDecks;
 
 
@@ -27,53 +26,49 @@ class Shoe {
             }
         }
 
-        cards.addAll(deck);
+        this.addAll(deck);
         return deck;
     }
 
     void emptyShoe() {
-        cards = new Stack<>();
+        this.clear();
         numDecks = 0;
     }
 
     void reshoe(Shoe discard) {
-        while (!discard.cards.isEmpty()) {
-            cards.push(discard.cards.pop());
+        while (!discard.isEmpty()) {
+            this.push(discard.pop());
         }
-        Collections.shuffle(cards);
+        Collections.shuffle(this);
     }
 
 
     void fillShoe(final int players) {
-        cards = new Stack<>();
+        this.clear();
         numDecks = (int)Math.ceil(players / (double)Game.PLAYERS_PER_DECK);
         for (int i = 0; i < numDecks; i++) {
             addDeck();
         }
-        Collections.shuffle(cards);
+        Collections.shuffle(this);
     }
 
 
     Shoe shuffle() {
-        Collections.shuffle(cards);
+        Collections.shuffle(this);
         return this;
     }
 
 
     Card nextCard() {
-        return cards.peek();
+        return peek();
     }
 
     int getNumDecks() {
         return numDecks;
     }
 
-    boolean isEmpty() {
-        return cards.isEmpty();
-    }
-
     public int cardsLeft() {
-        return cards.size();
+        return size();
     }
 
 
@@ -86,7 +81,7 @@ class Shoe {
         if (this.isEmpty()) {
             throw new EmptyShoeException();
         }
-        return cards.pop();
+        return pop();
     }
 
     ArrayList<Card> deal(final int handSize) throws EmptyShoeException {
@@ -98,7 +93,7 @@ class Shoe {
 
         Card card;
         for (int i = 0; i < handSize; i++) {
-            card = cards.pop();
+            card = pop();
             cardsDealt.add(card);
         }
 
@@ -117,19 +112,20 @@ class Shoe {
 
     Card deal(Hand hand) {
         Card next = deal();
-        hand.addCard(next);
+        hand.add(next);
         return next;
     }
 
 
     Shoe discard(Shoe discard, Card card) {
-        discard.cards.push(card);
+        discard.push(card);
         return discard;
     }
 
     Shoe discard(Shoe discard, Hand pile) {
-        for (Card card : pile.hand()) {
-            discard.cards.push(card);
+        Card[] cards = (Card[])pile.toArray();
+        for (Card card : pile) {
+            discard.push(card);
         }
         return discard;
     }

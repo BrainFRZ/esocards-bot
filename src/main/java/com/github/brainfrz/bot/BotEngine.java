@@ -111,18 +111,6 @@ public class BotEngine {
     public int getHandSize() {
         return handSize;
     }
-/*
-    public Hand getUserHand(User user) {
-        Player player;
-        for (Player value : players) {
-            player = value;
-            if (user.equals(player.user)) {
-                return player.hand;
-            }
-        }
-        return new Hand();
-    }
-*/
 
     public Player getPlayer(User user) {
         for (Player player : players) {
