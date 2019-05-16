@@ -10,8 +10,6 @@ import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.permission.Permissions;
 import org.javacord.api.entity.permission.PermissionsBuilder;
-import org.javacord.api.entity.user.User;
-import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,7 +33,6 @@ public class ESOCardsBot {
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards join")) {
                     && event.getMessage().getContent().equalsIgnoreCase("!join")) {
                 addUser(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
@@ -43,7 +40,6 @@ public class ESOCardsBot {
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards leave")) {
                     && event.getMessage().getContent().equalsIgnoreCase("!leave")) {
                 removeUser(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
@@ -51,7 +47,6 @@ public class ESOCardsBot {
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards roster")) {
                     && event.getMessage().getContent().equalsIgnoreCase("!roster")) {
                 printRoster(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
@@ -59,7 +54,6 @@ public class ESOCardsBot {
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards hand")) {
                     && event.getMessage().getContent().equalsIgnoreCase("!hand")) {
                 tellHand(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
@@ -68,7 +62,6 @@ public class ESOCardsBot {
         api.addMessageCreateListener(event -> {
             String message = event.getMessage().getContent().toLowerCase();
             if (!event.getMessageAuthor().isBotUser()
-//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards table")) {
                     && message.regionMatches(true, 0, "!table", 0, 6)) {
                 doTable(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
@@ -77,7 +70,6 @@ public class ESOCardsBot {
         api.addMessageCreateListener(event -> {
             String message = event.getMessage().getContent().toLowerCase();
             if (!event.getMessageAuthor().isBotUser()
-//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards draw")) {
                     && message.regionMatches(true, 0, "!draw", 0, 5)) {
                 doDraw(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
@@ -85,9 +77,16 @@ public class ESOCardsBot {
 
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
-//                    && event.getMessage().getContent().equalsIgnoreCase("!eso-cards left")) {
                     && event.getMessage().getContent().equalsIgnoreCase("!cards left")) {
                 cardsLeft(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
+            String message = event.getMessage().getContent().toLowerCase();
+            if (!event.getMessageAuthor().isBotUser()
+                    && message.regionMatches(true, 0, "!burn", 0, 5)) {
+                doBurn(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
         });
 
@@ -189,7 +188,7 @@ public class ESOCardsBot {
         } else if (message.equalsIgnoreCase("!table clear")) {
             clearTable(ev);
         } else {
-            ev.event.getChannel().sendMessage("Invalid usage. Type `!eso-cards help table` for help.");
+            ev.event.getChannel().sendMessage("Invalid usage. Type `!help table` for help.");
         }
     }
 
@@ -214,7 +213,7 @@ public class ESOCardsBot {
                                 + ev.engine.getTable().tabbedString());
         } catch (EmptyShoeException e) {
             ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
-                    "Type `!eso-cards reshoe` to reset the discard pile.");
+                    "Type `!reshoe` to reset the discard pile.");
         }
     }
 
@@ -238,12 +237,12 @@ public class ESOCardsBot {
 
         if (message.equals("!draw") || (message.length() == 7 && message.charAt(6) == '1')) {
             dealOneCard(ev);
-        } else if (message.matches("^!draw new( hand)?")) {
+        } else if (message.matches("^!draw new( hand)?$")) {
             dealNewHand(ev);
         } else if (message.matches("^!draw \\d+$")) {
             dealCards(ev);
         } else {
-            ev.event.getChannel().sendMessage("Invalid usage. Type `!eso-cards help draw` for help.");
+            ev.event.getChannel().sendMessage("Invalid usage. Type `!help draw` for help.");
         }
     }
 
@@ -257,7 +256,7 @@ public class ESOCardsBot {
             tellHand(ev, true);
         } catch (EmptyShoeException e) {
             ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
-                    "Type `!eso-cards reshoe` to reset the discard pile.");
+                    "Type `!reshoe` to reset the discard pile.");
         }
     }
 
@@ -273,7 +272,7 @@ public class ESOCardsBot {
             tellHand(ev, true);
         } catch (EmptyShoeException e) {
             ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
-                    "Type `!eso-cards reshoe` to reset the discard pile.");
+                    "Type `!reshoe` to reset the discard pile.");
         }
     }
 
@@ -285,7 +284,7 @@ public class ESOCardsBot {
             ev.engine.dealNewHand(ev.user, cardsDealt); // throws EmptyShoeException if there aren't enough cards
         } catch (EmptyShoeException e) {
             ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
-                    "Type `!eso-cards reshoe` to reset the discard pile.");
+                    "Type `!reshoe` to reset the discard pile.");
             return;
         }
 
@@ -299,6 +298,52 @@ public class ESOCardsBot {
                             " pile and draws " + cardsDealt + " new ones from the shoe.");
         }
         tellHand(ev, true);
+    }
+
+
+    public static void doBurn(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        if (!ev.engine.isPlaying(ev.user)) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
+            return;
+        }
+
+        if (message.equals("!burn") || (message.length() == 7 && message.charAt(6) == '1')) {
+            burnOneCard(ev);
+        } else if (message.matches("^!burn \\d+$")) {
+            burnCards(ev);
+        } else {
+            ev.event.getChannel().sendMessage("Invalid usage. Type `!help burn` for help.");
+        }
+    }
+
+    private static void burnOneCard(BotEvent ev) {
+        String message = ev.event.getMessageContent();
+
+        try {
+            ev.engine.burn(1);   // throws EmptyShoeException if there aren't enough cards
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " burns a card from the top of the shoe.");
+        } catch (EmptyShoeException e) {
+            ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
+                    "Type `!reshoe` to reset the discard pile.");
+        }
+    }
+
+    private static void burnCards(BotEvent ev) {
+        String message = ev.event.getMessageContent();
+        int cardsDealt = Integer.parseInt(message.substring(6));
+
+        try {
+            ev.engine.burn(cardsDealt);   // throws EmptyShoeException if there aren't enough cards
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " burns " + cardsDealt
+                            + " cards from the top of the shoe.");
+        } catch (EmptyShoeException e) {
+            ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
+                    "Type `!reshoe` to reset the discard pile.");
+        }
     }
 
 

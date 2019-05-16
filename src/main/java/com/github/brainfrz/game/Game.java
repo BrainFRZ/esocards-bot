@@ -49,8 +49,17 @@ public class Game {
     }
 
     public void discard(Hand pile) {
-        discard.addAll(pile);
-        pile.clear();
+        shoe.discard(discard, pile);
+    }
+
+    public Hand burn(int cardsToBurn) {
+        Hand cardsBurned = new Hand();
+        for (int i = 0; i < cardsToBurn; i++) {
+            Card nextCard = shoe.peek();
+            cardsBurned.add(nextCard);
+            shoe.discard(this.discard, nextCard);
+        }
+        return cardsBurned;
     }
 
 

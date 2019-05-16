@@ -127,13 +127,14 @@ class Shoe extends Stack<Card> {
 
     Shoe discard(Shoe discard, Card card) {
         discard.push(card);
+        this.remove(card);
         return discard;
     }
 
     Shoe discard(Shoe discard, Hand pile) {
-        ArrayList<Card> cards = new ArrayList<>(pile);
-        for (Card card : pile) {
-            discard.push(card);
+        while (!pile.isEmpty()) {
+            discard.push(pile.get(0));
+            pile.remove(0);
         }
         return discard;
     }

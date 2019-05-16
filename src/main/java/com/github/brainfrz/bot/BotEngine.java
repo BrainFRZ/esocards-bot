@@ -109,6 +109,11 @@ public class BotEngine {
     }
 
 
+    Hand burn(int handSize) {
+        return game.burn(handSize);
+    }
+
+
     public int shoeSize() {
         return game.shoeSize();
     }
