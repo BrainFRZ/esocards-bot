@@ -1,6 +1,6 @@
 package com.github.brainfrz.game;
 
-class Card {
+public class Card {
     public enum Face {
         CHAMPION, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, DAGGER, ARMOR, SWORD;
 

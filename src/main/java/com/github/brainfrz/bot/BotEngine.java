@@ -99,6 +99,10 @@ public class BotEngine {
         }
     }
 
+    public int cardsLeft() {
+        return game.cardsLeft();
+    }
+
 
     public void setHandSize(int size) {
         if (handSize < 0) {

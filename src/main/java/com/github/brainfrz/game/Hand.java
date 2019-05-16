@@ -1,7 +1,7 @@
 package com.github.brainfrz.game;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 public class Hand extends ArrayList<Card> {
 
@@ -56,10 +56,29 @@ public class Hand extends ArrayList<Card> {
 
     public String tabbedString() {
         StringBuilder builder = new StringBuilder();
-        Card[] hand = (Card[])this.toArray();
-        for (Card card : hand) {
+        for (Card card : this) {
             builder.append("\t").append(card).append("\n");
         }
         return builder.toString();
+    }
+
+    public String indexedString(boolean tabbed) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < this.size(); i++) {
+            if (tabbed) {
+                builder.append("\t");
+            }
+            builder.append(i).append(".\t").append(this.get(i)).append("\n");
+        }
+        return builder.toString();
+    }
+
+    public String indexedString() {
+        return indexedString(false);
+    }
+
+
+    public List<Card> toList() {
+        return this;
     }
 }
