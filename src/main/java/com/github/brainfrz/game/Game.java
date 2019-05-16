@@ -9,7 +9,7 @@ public class Game {
     private int handSize;
     private ArrayList<Card> table;  // Optional table for games that require it.
 
-    final static int PLAYERS_PER_DECK = 2;
+    final static int PLAYERS_PER_DECK = 1;
 
 
     public Game(int numPlayers) {
@@ -22,24 +22,6 @@ public class Game {
     public Game() {
         this(0);
     }
-
-/*
-    public Game(Hand initialHand) {
-        this(1);
-        this.handSize = initialHand.size();
-        hands.add(initialHand);
-    }
-
-    public Game(ArrayList<Hand> hands) {
-        this(hands.size());
-        if (hands.isEmpty()) {
-            handSize = 0;
-        } else {
-            handSize = hands.get(0).size();
-        }
-        this.hands = hands;
-    }
- */
 
 
     public ArrayList<Card> dealTable(final int cards) throws EmptyShoeException {
@@ -63,10 +45,6 @@ public class Game {
     public int setHandSize(int size) {
         handSize = size;
         return handSize;
-    }
-
-    public void drawInitialHand(Hand hand) {
-        hands.add(hand);
     }
 
     public void addHand(Hand hand) {

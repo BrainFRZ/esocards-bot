@@ -111,7 +111,7 @@ public class BotEngine {
     public int getHandSize() {
         return handSize;
     }
-
+/*
     public Hand getUserHand(User user) {
         Player player;
         for (Player value : players) {
@@ -122,7 +122,17 @@ public class BotEngine {
         }
         return new Hand();
     }
+*/
 
+    public Player getPlayer(User user) {
+        for (Player player : players) {
+            if (player.user.equals(user)) {
+                return player;
+            }
+        }
+
+        throw new IndexOutOfBoundsException("No such user is playing: " + user.getDiscriminatedName());
+    }
 
     public ArrayList<Player> roster() {
         return players;

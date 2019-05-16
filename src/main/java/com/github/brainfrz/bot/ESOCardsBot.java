@@ -90,7 +90,7 @@ public class ESOCardsBot {
     private static void addUser(MessageCreateEvent event, User user, BotEngine engine) {
         int oldDecks = engine.shoeSize();
         if (engine.addPlayer(user)) {
-            event.getChannel().sendMessage(user.getMentionTag() + " just joined the game!");
+            event.getChannel().sendMessage(user.getNicknameMentionTag() + " just joined the game!");
 
             int newDecks = engine.shoeSize();
             if (oldDecks != newDecks) {
@@ -98,7 +98,7 @@ public class ESOCardsBot {
             }
             event.getChannel().sendMessage("There are " + engine.rosterSize() + " players.");
         } else {
-            event.getChannel().sendMessage(user.getMentionTag() + " is already playing.");
+            event.getChannel().sendMessage(user.getNicknameMentionTag() + " is already playing.");
         }
 
         System.out.println("There are " + engine.game.cardsLeft() + " cards left.");
@@ -107,14 +107,14 @@ public class ESOCardsBot {
     private static void removeUser(MessageCreateEvent event, User user, BotEngine engine) {
         int oldDecks = engine.shoeSize();
         if (engine.dropPlayer(user)) {
-            event.getChannel().sendMessage(user.getMentionTag() + " just left the game. Awwwww...");
+            event.getChannel().sendMessage(user.getNicknameMentionTag() + " just left the game. Awwwww...");
 
             int newDecks = engine.shoeSize();
             if (oldDecks != newDecks) {
                 event.getChannel().sendMessage("A deck has been removed from the game. " + engine.shoeSizeStr());
             }
         } else {
-            event.getChannel().sendMessage(user.getMentionTag() + " isn't playing anyway.");
+            event.getChannel().sendMessage(user.getNicknameMentionTag() + " isn't playing anyway.");
         }
     }
 
@@ -131,7 +131,7 @@ public class ESOCardsBot {
         MessageBuilder builder = new MessageBuilder();
         builder.append("The following Guardians are playing cards:").appendNewLine();
         for (Player player : roster) {
-            builder.append("\t").append(player.user.getMentionTag()).appendNewLine();
+            builder.append("\t").append(player.user.getNicknameMentionTag()).appendNewLine();
         }
 
         builder.send(event.getChannel());
@@ -140,13 +140,13 @@ public class ESOCardsBot {
 
     private static void tellHand(MessageCreateEvent event, User user, BotEngine engine) {
         if (!engine.isPlaying(user)) {
-            event.getChannel().sendMessage(user.getMentionTag() + " isn't playing. Come join!");
+            event.getChannel().sendMessage(user.getNicknameMentionTag() + " isn't playing. Come join!");
             return;
         }
 
-        event.getChannel().sendMessage(user.getMentionTag() + " just checked their hand.");
+        event.getChannel().sendMessage(user.getNicknameMentionTag() + " just checked their hand.");
 
-        Hand hand = engine.getUserHand(user);
+        Hand hand = engine.getPlayer(user).hand;
         if (hand.isEmpty()) {
             user.sendMessage("Your hand is empty. Deal another.");
         } else {
