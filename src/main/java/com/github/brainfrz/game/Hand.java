@@ -30,17 +30,15 @@ public class Hand extends ArrayList<Card> {
             throw new EmptyShoeException(shoe.cardsLeft(), initialSize);
         }
 
-        Card next;
         for (int i = 0; i < initialSize; i++) {
-            next = shoe.deal(this);
+            shoe.deal(this);
         }
     }
 
 
     public int value() {
         int value = 0;
-        Card[] hand = (Card[])this.toArray();
-        for (Card card : hand) {
+        for (Card card : this) {
             value += card.value();
         }
         return value;
@@ -50,8 +48,7 @@ public class Hand extends ArrayList<Card> {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        Card[] hand = (Card[])this.toArray();
-        for (Card card : hand) {
+        for (Card card : this) {
             builder.append(card).append("\n");
         }
         return builder.toString();

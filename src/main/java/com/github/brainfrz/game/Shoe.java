@@ -17,19 +17,6 @@ class Shoe extends Stack<Card> {
         fillShoe(players);
     }
 
-    ArrayList<Card> addDeck() {
-        ArrayList<Card> deck;
-        deck = new ArrayList<Card>();
-        for (Card.Suit suit : Card.Suit.values()) {
-            for (Card.Face face : Card.Face.values()) {
-                deck.add(new Card(face, suit));
-            }
-        }
-
-        this.addAll(deck);
-        return deck;
-    }
-
     void emptyShoe() {
         this.clear();
         numDecks = 0;
@@ -50,6 +37,19 @@ class Shoe extends Stack<Card> {
             addDeck();
         }
         Collections.shuffle(this);
+    }
+
+    private ArrayList<Card> addDeck() {
+        ArrayList<Card> deck;
+        deck = new ArrayList<Card>();
+        for (Card.Suit suit : Card.Suit.values()) {
+            for (Card.Face face : Card.Face.values()) {
+                deck.add(new Card(face, suit));
+            }
+        }
+
+        this.addAll(deck);
+        return deck;
     }
 
 
@@ -123,7 +123,7 @@ class Shoe extends Stack<Card> {
     }
 
     Shoe discard(Shoe discard, Hand pile) {
-        Card[] cards = (Card[])pile.toArray();
+        ArrayList<Card> cards = new ArrayList<>(pile);
         for (Card card : pile) {
             discard.push(card);
         }
