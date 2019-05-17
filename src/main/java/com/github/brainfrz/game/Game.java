@@ -9,8 +9,8 @@ public class Game {
     private int handSize;
     private Hand table;  // Optional table for games that require it.
 
-    final static int PLAYERS_PER_DECK = 2;
-    final static int DEFAULT_HAND_SIZE = 5;
+    public final static int PLAYERS_PER_DECK = 2;
+    public final static int DEFAULT_HAND_SIZE = 0;
 
 
     public Game(int numPlayers) {

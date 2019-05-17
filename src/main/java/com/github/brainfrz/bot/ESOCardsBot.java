@@ -63,7 +63,7 @@ public class ESOCardsBot {
         api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
                     && event.getMessage().getContent()
-                                .regionMatches(true, 0, "!show", 0, 5)) {
+                    .regionMatches(true, 0, "!show", 0, 5)) {
                 doShow(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
         });
@@ -122,6 +122,15 @@ public class ESOCardsBot {
                 doReshoe(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
         });
+
+        api.addMessageCreateListener(event -> {
+            String message = event.getMessage().getContent().toLowerCase();
+            if (!event.getMessageAuthor().isBotUser()
+                    && message.regionMatches(true, 0, "!handsize", 0, 9)) {
+                doHandsize(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
+            }
+        });
+
 
         api.addMessageCreateListener(new BotHelp());
 
@@ -237,7 +246,7 @@ public class ESOCardsBot {
             ev.user.sendMessage(ev.user.getNicknameMentionTag() + "'s hand is empty.");
         } else {
             ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " shows their hand:\n"
-                                                + hand.tabbedString());
+                    + hand.tabbedString());
         }
     }
 
@@ -258,7 +267,7 @@ public class ESOCardsBot {
             msg.append(ev.user.getNicknameMentionTag() + " shows a card:\t" + cards.get(0));
         } else {
             msg.append(ev.user.getNicknameMentionTag() + " shows some cards:").appendNewLine()
-                .append(cards.tabbedString());
+                    .append(cards.tabbedString());
         }
         msg.send(ev.event.getChannel());
     }
@@ -358,7 +367,7 @@ public class ESOCardsBot {
             if (hand.size() <= i) {
                 return new Hand();
             } else {
-                cardsShown.add(hand.get(i-1));
+                cardsShown.add(hand.get(i - 1));
             }
         }
         return cardsShown;
@@ -386,8 +395,7 @@ public class ESOCardsBot {
             clearTable(ev);
         } else if (message.matches("^!table last( \\d+)?$")) {
             showTableEnd(ev);
-        }
-        else {
+        } else {
             ev.event.getChannel().sendMessage("Invalid usage. Type `!help table` for help.");
         }
     }
@@ -412,10 +420,10 @@ public class ESOCardsBot {
         Hand cardsShown = new Hand();
         int cardsDealt = 1;
         if (message.length() == 11) { // Message was "!table last"
-            cardsShown.add(table.get(table.size()-1));
+            cardsShown.add(table.get(table.size() - 1));
         } else {
             cardsDealt = Integer.parseInt(message.substring(12));
-            cardsShown.addAll(table.subList(table.size()-cardsDealt, table.size()));
+            cardsShown.addAll(table.subList(table.size() - cardsDealt, table.size()));
             Collections.reverse(cardsShown);
         }
 
@@ -438,7 +446,7 @@ public class ESOCardsBot {
             ev.event.getChannel()
                     .sendMessage(ev.user.getNicknameMentionTag()
                             + " deals " + cardsDealt + " cards to the table:\n"
-                                + ev.engine.getTableCopy().tabbedString());
+                            + ev.engine.getTableCopy().tabbedString());
         } catch (EmptyShoeException e) {
             ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
                     "Type `!reshoe` to reset the discard pile.");
@@ -518,7 +526,7 @@ public class ESOCardsBot {
 
     private static void dealNewHand(BotEvent ev) {
         String message = ev.event.getMessageContent();
-        int cardsDealt = ev.engine.game.getHandSize();
+        int cardsDealt = ev.engine.getHandSize();
 
         try {
             ev.engine.dealNewHand(ev.user, cardsDealt); // throws EmptyShoeException if there aren't enough cards
@@ -530,9 +538,9 @@ public class ESOCardsBot {
 
         String drawMessage;
         if (cardsDealt == 1) {
-            drawMessage = "1 new card";
+            drawMessage = "1 card";
         } else {
-            drawMessage = cardsDealt + " new ones";
+            drawMessage = cardsDealt + " cards";
         }
 
         if (ev.engine.getPlayer(ev.user).hand.isEmpty()) {
@@ -571,7 +579,7 @@ public class ESOCardsBot {
 
         try {
             ev.engine.takeTopCardsFromTable(ev.user, cardsTaken);   // throws EmptyShoeException if
-                                                                    // there aren't enough cards
+            // there aren't enough cards
             String takeMessage;
             if (cardsTaken == 1) {
                 takeMessage = "1 new card";
@@ -611,7 +619,7 @@ public class ESOCardsBot {
         if (cardsTaken.size() == 1) {
             ev.event.getChannel()
                     .sendMessage(ev.user.getNicknameMentionTag() + " takes a card from the table:"
-                                    + cardsTaken.tabbedString());
+                            + cardsTaken.tabbedString());
         } else {
             ev.event.getChannel()
                     .sendMessage(ev.user.getNicknameMentionTag() + " takes cards from the table:\n"
@@ -680,5 +688,52 @@ public class ESOCardsBot {
         }
 
         ev.event.getChannel().sendMessage("There " + areRemaining + " remaining in the shoe.");
+    }
+
+
+    private static void doHandsize(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        if (message.equals("!handsize")) {
+            checkHandSize(ev);
+        } else {
+            changeHandSize(ev);
+        }
+    }
+
+    private static void checkHandSize(BotEvent ev) {
+        int handSize = ev.engine.getHandSize();
+
+        String cardString;
+        if (handSize == 1) {
+            cardString = "1 card.";
+        } else {
+            cardString = handSize + " cards.";
+        }
+        ev.event.getChannel().sendMessage("The current hand size is " + cardString);
+    }
+
+    private static void changeHandSize(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+        int handSize = Integer.parseInt(message.substring(10));
+
+        if (handSize < 0) {
+            ev.event.getChannel()
+                    .sendMessage("The hand size can't be negative.");
+            return;
+        }
+
+        ev.engine.setHandSize(handSize);   // throws EmptyShoeException if there aren't enough cards
+
+        String cardString;
+        if (handSize == 1) {
+            cardString = "1 card.";
+        } else {
+            cardString = handSize + " cards.";
+        }
+
+        ev.event.getChannel()
+                .sendMessage(ev.user.getNicknameMentionTag() + " sets the starting hand size to " + cardString);
+
     }
 }

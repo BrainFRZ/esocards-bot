@@ -19,8 +19,7 @@ public class BotEngine {
         game = new Game();
         users = new ArrayList<>();
         players = new ArrayList<>();
-//        handSize = 0;
-        handSize = 5;
+        handSize = Game.DEFAULT_HAND_SIZE;
     }
 
 

@@ -54,7 +54,7 @@ public class BotHelp implements MessageCreateListener {
                 "\t__**take**__\t\t\t\t Takes one or more cards from the table.\n" +
                 "\t__**burn**__\t\t\t\tDiscards one or more cards from the top of the shoe.\n" +
                 "\t__**reshoe**__\t\t\tAdds discard pile back to shoe and reshuffles it.\n" +
-                "\t__**handsize**__\t\tSets the default hand size and redeals hands to all joined players.");
+                "\t__**handsize**__\t\tSets the default hand size for future hands dealt.");
     }
 
     private static void helpJoin(MessageCreateEvent event) {
@@ -160,8 +160,7 @@ public class BotHelp implements MessageCreateListener {
         event.getChannel().sendMessage(
                 "**Syntax**: !handsize [size]\n" +
                         "If no argument is given, this command will send the current starting hand size to the " +
-                        "channel. If a size is given, it will change the starting size, start a new game, and deal new" +
-                        " hands to all players automatically."
+                        "channel. If a size is given, it will change the starting size for future hands dealt."
         );
     }
 }
