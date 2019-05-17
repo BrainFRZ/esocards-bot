@@ -90,6 +90,14 @@ public class ESOCardsBot {
             }
         });
 
+        api.addMessageCreateListener(event -> {
+            String message = event.getMessage().getContent().toLowerCase();
+            if (!event.getMessageAuthor().isBotUser()
+                    && message.equalsIgnoreCase("!reshoe")) {
+                doReshoe(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
+            }
+        });
+
 
         // Print the invite url of your bot:
         // https://discordapp.com/oauth2/authorize?client_id=577728737391673344&scope=bot&permissions=2048
@@ -224,6 +232,18 @@ public class ESOCardsBot {
         } else {
             ev.event.getChannel().sendMessage("There are no cards on the table.");
         }
+    }
+
+
+    public static void doReshoe(BotEvent ev) {
+        if (!ev.engine.isPlaying(ev.user)) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
+            return;
+        }
+
+        ev.engine.reshoe();
+        ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " takes the discard pile and " +
+                "shuffles it back into the shoe.");
     }
 
 

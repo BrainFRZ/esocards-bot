@@ -93,6 +93,10 @@ public class Game {
         shoe.shuffle();
     }
 
+    public void reshoe() {
+        shoe.reshoe(discard);
+    }
+
     public Shoe getShoe() {
         return shoe;
     }

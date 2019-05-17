@@ -114,6 +114,11 @@ public class BotEngine {
     }
 
 
+    void reshoe() {
+        game.reshoe();
+    }
+
+
     public int shoeSize() {
         return game.shoeSize();
     }
