@@ -1,5 +1,6 @@
 package com.github.brainfrz.bot;
 
+import com.github.brainfrz.game.Card;
 import com.github.brainfrz.game.EmptyShoeException;
 import com.github.brainfrz.game.Game;
 import com.github.brainfrz.game.Hand;
@@ -111,6 +112,12 @@ public class BotEngine {
 
     Hand burn(int handSize) {
         return game.burn(handSize);
+    }
+
+
+    Hand playCard(User user, Card card) {
+        Player player = getPlayer(user);
+        return game.discard(player.hand, card);
     }
 
 

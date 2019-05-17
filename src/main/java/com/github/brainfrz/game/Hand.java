@@ -46,6 +46,19 @@ public class Hand extends ArrayList<Card> {
     }
 
 
+    /**
+     * Removes a card from the hand into the discard shoe.
+     * @param discard Shoe to put discarded card
+     * @param card Card to be discarded
+     * @return New hand after the discard
+     */
+    public Hand discard(Shoe discard, Card card) {
+        discard.push(card);
+        this.remove(card);
+        return this;
+    }
+
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

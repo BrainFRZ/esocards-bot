@@ -1,5 +1,6 @@
 package com.github.brainfrz.bot;
 
+import com.github.brainfrz.game.Card;
 import com.github.brainfrz.game.EmptyShoeException;
 import com.github.brainfrz.game.Hand;
 
@@ -64,6 +65,14 @@ public class ESOCardsBot {
                     && event.getMessage().getContent()
                                 .regionMatches(true, 0, "!show", 0, 5)) {
                 doShow(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
+            if (!event.getMessageAuthor().isBotUser()
+                    && event.getMessage().getContent()
+                    .regionMatches(true, 0, "!play", 0, 5)) {
+                doPlay(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
         });
 
@@ -243,6 +252,50 @@ public class ESOCardsBot {
         }
         msg.send(ev.event.getChannel());
     }
+
+
+    private static void doPlay(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        if (!ev.engine.isPlaying(ev.user)) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
+            return;
+        }
+
+        if (message.matches("^!play( \\d)+$")) {
+            playCards(ev);
+        } else {
+            ev.event.getChannel().sendMessage("Invalid usage. Type `!help show` for help.");
+        }
+    }
+
+    private static void playCards(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        Hand hand = ev.engine.getPlayer(ev.user).hand;
+        Hand cards = getCardsFromHand(hand, message.substring(6));
+
+        if (cards.isEmpty()) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + "'s hand isn't that big.");
+            tellHand(ev, true);
+            return;
+        }
+
+        MessageBuilder msg = new MessageBuilder();
+        if (cards.size() == 1) {
+            Card card = cards.get(0);
+            msg.append(ev.user.getNicknameMentionTag() + " plays a card:\t" + card);
+            ev.engine.playCard(ev.user, card);
+        } else {
+            msg.append(ev.user.getNicknameMentionTag() + " plays some cards:").appendNewLine()
+                    .append(cards.tabbedString());
+            for (Card card : cards) {
+                ev.engine.playCard(ev.user, card);
+            }
+        }
+        msg.send(ev.event.getChannel());
+    }
+
 
     private static Hand getCardsFromHand(Hand hand, String indices) {
         Hand cardsShown = new Hand();

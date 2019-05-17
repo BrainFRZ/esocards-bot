@@ -9,7 +9,7 @@ public class Game {
     private int handSize;
     private Hand table;  // Optional table for games that require it.
 
-    final static int PLAYERS_PER_DECK = 1;
+    final static int PLAYERS_PER_DECK = 2;
     final static int DEFAULT_HAND_SIZE = 5;
 
 
@@ -50,6 +50,11 @@ public class Game {
 
     public void discard(Hand pile) {
         shoe.discard(discard, pile);
+    }
+
+    public Hand discard(Hand hand, Card card) {
+        hand.discard(discard, card);
+        return hand;
     }
 
     public Hand burn(int cardsToBurn) {
