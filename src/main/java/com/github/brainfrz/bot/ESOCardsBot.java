@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ESOCardsBot {
     public static void main(String[] args) {
@@ -259,6 +260,18 @@ public class ESOCardsBot {
         return cardsShown;
     }
 
+    private static Hand getCardsFromHand(Hand hand, int[] indices) {
+        Hand cardsShown = new Hand();
+        for (int i : indices) {
+            if (hand.size() <= i) {
+                return new Hand();
+            } else {
+                cardsShown.add(hand.get(i-1));
+            }
+        }
+        return cardsShown;
+    }
+
 
     private static void doTable(BotEvent ev) {
         String message = ev.event.getMessageContent().toLowerCase();
@@ -269,7 +282,10 @@ public class ESOCardsBot {
             dealTable(ev);
         } else if (message.equalsIgnoreCase("!table clear")) {
             clearTable(ev);
-        } else {
+        } else if (message.matches("^!table last( \\d+)?$")) {
+            showTableEnd(ev);
+        }
+        else {
             ev.event.getChannel().sendMessage("Invalid usage. Type `!help table` for help.");
         }
     }
@@ -281,6 +297,34 @@ public class ESOCardsBot {
             ev.event.getChannel().sendMessage("The following cards are on the table:\n"
                     + ev.engine.getTable().tabbedString());
         }
+    }
+
+    private static void showTableEnd(BotEvent ev) {
+        Hand table = ev.engine.getTable();
+        if (table.isEmpty()) {
+            ev.event.getChannel().sendMessage("There are no cards on the table.");
+            return;
+        }
+
+        String message = ev.event.getMessageContent();
+        Hand cardsShown = new Hand();
+        int cardsDealt = 1;
+        if (message.length() == 11) { // Message was "!table last"
+            cardsShown.add(table.get(table.size()-1));
+        } else {
+            cardsDealt = Integer.parseInt(message.substring(12));
+            cardsShown.addAll(table.subList(table.size()-cardsDealt, table.size()));
+            Collections.reverse(cardsShown);
+        }
+
+        MessageBuilder builder = new MessageBuilder();
+        if (cardsDealt == 1) {
+            builder.append("The following card is at the top of the table:");
+        } else {
+            builder.append("The following cards are at the top of table:").appendNewLine();
+        }
+        builder.append(cardsShown.tabbedString());
+        builder.send(ev.event.getChannel());
     }
 
     private static void dealTable(BotEvent ev) {
