@@ -123,6 +123,8 @@ public class ESOCardsBot {
             }
         });
 
+        api.addMessageCreateListener(new BotHelp());
+
 
         // Print the invite url of your bot:
         // https://discordapp.com/oauth2/authorize?client_id=577728737391673344&scope=bot&permissions=2048
@@ -222,7 +224,7 @@ public class ESOCardsBot {
 
         if (message.matches("^!show( hand)?$")) {
             showHand(ev);
-        } else if (message.matches("^!show( \\d)+$")) {
+        } else if (message.matches("^!show( \\d+)+$")) {
             showCards(ev);
         } else {
             ev.event.getChannel().sendMessage("Invalid usage. Type `!help show` for help.");
