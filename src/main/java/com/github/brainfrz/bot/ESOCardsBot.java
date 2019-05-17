@@ -264,8 +264,10 @@ public class ESOCardsBot {
 
         if (message.matches("^!play( \\d)+$")) {
             playCards(ev);
+        } else if (message.matches("^!play table( \\d)+$")) {
+            playCardsToTable(ev);
         } else {
-            ev.event.getChannel().sendMessage("Invalid usage. Type `!help show` for help.");
+            ev.event.getChannel().sendMessage("Invalid usage. Type `!help play` for help.");
         }
     }
 
@@ -291,6 +293,33 @@ public class ESOCardsBot {
                     .append(cards.tabbedString());
             for (Card card : cards) {
                 ev.engine.playCard(ev.user, card);
+            }
+        }
+        msg.send(ev.event.getChannel());
+    }
+
+    private static void playCardsToTable(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        Hand hand = ev.engine.getPlayer(ev.user).hand;
+        Hand cards = getCardsFromHand(hand, message.substring(12));
+
+        if (cards.isEmpty()) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + "'s hand isn't that big.");
+            tellHand(ev, true);
+            return;
+        }
+
+        MessageBuilder msg = new MessageBuilder();
+        if (cards.size() == 1) {
+            Card card = cards.get(0);
+            msg.append(ev.user.getNicknameMentionTag() + " plays a card on the table:\t" + card);
+            ev.engine.playCardToTable(ev.user, card);
+        } else {
+            msg.append(ev.user.getNicknameMentionTag() + " plays some cards on the table:").appendNewLine()
+                    .append(cards.tabbedString());
+            for (Card card : cards) {
+                ev.engine.playCardToTable(ev.user, card);
             }
         }
         msg.send(ev.event.getChannel());

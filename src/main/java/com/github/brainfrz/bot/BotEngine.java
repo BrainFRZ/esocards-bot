@@ -120,6 +120,13 @@ public class BotEngine {
         return game.discard(player.hand, card);
     }
 
+    Hand playCardToTable(User user, Card card) {
+        Player player = getPlayer(user);
+        player.hand.remove(card);
+        game.table().add(card);
+        return player.hand;
+    }
+
 
     void reshoe() {
         game.reshoe();
