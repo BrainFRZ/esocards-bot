@@ -1,6 +1,5 @@
 package com.github.brainfrz.bot;
 
-import com.github.brainfrz.game.Card;
 import com.github.brainfrz.game.EmptyShoeException;
 import com.github.brainfrz.game.Hand;
 
@@ -56,6 +55,14 @@ public class ESOCardsBot {
             if (!event.getMessageAuthor().isBotUser()
                     && event.getMessage().getContent().equalsIgnoreCase("!hand")) {
                 tellHand(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
+            if (!event.getMessageAuthor().isBotUser()
+                    && event.getMessage().getContent()
+                                .regionMatches(true, 0, "!show", 0, 5)) {
+                doShow(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
             }
         });
 
@@ -181,8 +188,75 @@ public class ESOCardsBot {
         }
     }
 
+
     private static void tellHand(BotEvent ev) {
         tellHand(ev, false);
+    }
+
+
+    private static void doShow(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        if (!ev.engine.isPlaying(ev.user)) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
+            return;
+        }
+
+        if (message.matches("^!show( hand)?$")) {
+            showHand(ev);
+        } else if (message.matches("^!show( \\d)+$")) {
+            showCards(ev);
+        } else {
+            ev.event.getChannel().sendMessage("Invalid usage. Type `!help show` for help.");
+        }
+    }
+
+    private static void showHand(BotEvent ev) {
+        Hand hand = ev.engine.getPlayer(ev.user).hand;
+        if (hand.isEmpty()) {
+            ev.user.sendMessage(ev.user.getNicknameMentionTag() + "'s hand is empty.");
+        } else {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " shows their hand:\n"
+                                                + hand.tabbedString());
+        }
+    }
+
+    private static void showCards(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        Hand hand = ev.engine.getPlayer(ev.user).hand;
+        Hand cards = getCardsFromHand(hand, message.substring(6));
+
+        if (cards.isEmpty()) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + "'s hand isn't that big.");
+            tellHand(ev, true);
+            return;
+        }
+
+        MessageBuilder msg = new MessageBuilder();
+        if (cards.size() == 1) {
+            msg.append(ev.user.getNicknameMentionTag() + " shows a card:\t" + cards.get(0));
+        } else {
+            msg.append(ev.user.getNicknameMentionTag() + " shows some cards:").appendNewLine()
+                .append(cards.tabbedString());
+        }
+        msg.send(ev.event.getChannel());
+    }
+
+    private static Hand getCardsFromHand(Hand hand, String indices) {
+        Hand cardsShown = new Hand();
+        int cardIndex;
+        String[] arr = indices.split(" ");
+        for (String str : arr) {
+            cardIndex = Integer.parseInt(str) - 1;
+
+            if (hand.size() <= cardIndex) {
+                return new Hand();
+            } else {
+                cardsShown.add(hand.get(cardIndex));
+            }
+        }
+        return cardsShown;
     }
 
 
