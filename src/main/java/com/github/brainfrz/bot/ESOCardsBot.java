@@ -93,6 +93,14 @@ public class ESOCardsBot {
         });
 
         api.addMessageCreateListener(event -> {
+            String message = event.getMessage().getContent().toLowerCase();
+            if (!event.getMessageAuthor().isBotUser()
+                    && message.regionMatches(true, 0, "!take", 0, 5)) {
+                doTake(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
+            }
+        });
+
+        api.addMessageCreateListener(event -> {
             if (!event.getMessageAuthor().isBotUser()
                     && event.getMessage().getContent().equalsIgnoreCase("!cards left")) {
                 cardsLeft(new BotEvent(event, event.getMessageAuthor().asUser().get(), engine));
@@ -262,9 +270,9 @@ public class ESOCardsBot {
             return;
         }
 
-        if (message.matches("^!play( \\d)+$")) {
+        if (message.matches("^!play( \\d+)+$")) {
             playCards(ev);
-        } else if (message.matches("^!play table( \\d)+$")) {
+        } else if (message.matches("^!play table( \\d+)+$")) {
             playCardsToTable(ev);
         } else {
             ev.event.getChannel().sendMessage("Invalid usage. Type `!help play` for help.");
@@ -354,6 +362,16 @@ public class ESOCardsBot {
         return cardsShown;
     }
 
+    private static int[] getIndices(String str) {
+        String[] iStrings = str.split(" ");
+        int[] indices = new int[iStrings.length];
+        for (int i = 0; i < iStrings.length; i++) {
+            indices[i] = Integer.parseInt(iStrings[i]);
+        }
+
+        return indices;
+    }
+
 
     private static void doTable(BotEvent ev) {
         String message = ev.event.getMessageContent().toLowerCase();
@@ -373,16 +391,16 @@ public class ESOCardsBot {
     }
 
     private static void showTable(BotEvent ev) {
-        if (ev.engine.getTable().isEmpty()) {
+        if (ev.engine.getTableCopy().isEmpty()) {
             ev.event.getChannel().sendMessage("There are no cards on the table.");
         } else {
             ev.event.getChannel().sendMessage("The following cards are on the table:\n"
-                    + ev.engine.getTable().tabbedString());
+                    + ev.engine.getTableCopy().tabbedString());
         }
     }
 
     private static void showTableEnd(BotEvent ev) {
-        Hand table = ev.engine.getTable();
+        Hand table = ev.engine.getTableCopy();
         if (table.isEmpty()) {
             ev.event.getChannel().sendMessage("There are no cards on the table.");
             return;
@@ -418,14 +436,14 @@ public class ESOCardsBot {
             ev.event.getChannel()
                     .sendMessage(ev.user.getNicknameMentionTag()
                             + " deals " + cardsDealt + " cards to the table:\n"
-                                + ev.engine.getTable().tabbedString());
+                                + ev.engine.getTableCopy().tabbedString());
         } catch (EmptyShoeException e) {
             ev.event.getChannel().sendMessage("There aren't enough cards left in the shoe. " +
                     "Type `!reshoe` to reset the discard pile.");
         }
     }
 
-    public static void clearTable(BotEvent ev) {
+    private static void clearTable(BotEvent ev) {
         boolean cleared = ev.engine.clearTable();
         if (cleared) {
             ev.event.getChannel().sendMessage(ev.user.getMentionTag() + " cleared the table.");
@@ -435,7 +453,7 @@ public class ESOCardsBot {
     }
 
 
-    public static void doReshoe(BotEvent ev) {
+    private static void doReshoe(BotEvent ev) {
         if (!ev.engine.isPlaying(ev.user)) {
             ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
             return;
@@ -447,7 +465,7 @@ public class ESOCardsBot {
     }
 
 
-    public static void doDraw(BotEvent ev) {
+    private static void doDraw(BotEvent ev) {
         String message = ev.event.getMessageContent().toLowerCase();
 
         if (!ev.engine.isPlaying(ev.user)) {
@@ -496,7 +514,7 @@ public class ESOCardsBot {
         }
     }
 
-    public static void dealNewHand(BotEvent ev) {
+    private static void dealNewHand(BotEvent ev) {
         String message = ev.event.getMessageContent();
         int cardsDealt = ev.engine.game.getHandSize();
 
@@ -508,20 +526,101 @@ public class ESOCardsBot {
             return;
         }
 
+        String drawMessage;
+        if (cardsDealt == 1) {
+            drawMessage = "1 new card";
+        } else {
+            drawMessage = cardsDealt + " new ones";
+        }
+
         if (ev.engine.getPlayer(ev.user).hand.isEmpty()) {
             ev.event.getChannel()
-                    .sendMessage(ev.user.getNicknameMentionTag() + " draws " + cardsDealt
-                            + " new cards from the shoe.");
+                    .sendMessage(ev.user.getNicknameMentionTag() + " draws " + drawMessage +
+                            " from the shoe.");
         } else {
             ev.event.getChannel()
                     .sendMessage(ev.user.getNicknameMentionTag() + " sets down their cards in the discard" +
-                            " pile and draws " + cardsDealt + " new ones from the shoe.");
+                            " pile and draws " + drawMessage + " from the shoe.");
         }
         tellHand(ev, true);
     }
 
 
-    public static void doBurn(BotEvent ev) {
+    private static void doTake(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        if (!ev.engine.isPlaying(ev.user)) {
+            ev.event.getChannel().sendMessage(ev.user.getNicknameMentionTag() + " isn't playing. Come join!");
+            return;
+        }
+
+        if (message.matches("^!take \\d+$")) {
+            takeTopCards(ev);
+        } else if (message.matches("^!take( \\d+)+$")) {
+            takeCards(ev);
+        } else {
+            ev.event.getChannel().sendMessage("Invalid usage. Type `!help take` for help.");
+        }
+    }
+
+    private static void takeTopCards(BotEvent ev) {
+        String message = ev.event.getMessageContent();
+        int cardsTaken = Integer.parseInt(message.substring(6));
+
+        try {
+            ev.engine.takeTopCardsFromTable(ev.user, cardsTaken);   // throws EmptyShoeException if
+                                                                    // there aren't enough cards
+            String takeMessage;
+            if (cardsTaken == 1) {
+                takeMessage = "1 new card";
+            } else {
+                takeMessage = cardsTaken + " new cards";
+            }
+
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " takes " + takeMessage
+                            + " from the top of table.");
+            tellHand(ev, true);
+        } catch (EmptyShoeException e) {
+            int cardsLeft = ev.engine.getTableCopy().size();
+            ev.event.getChannel().sendMessage("There are only " + cardsLeft + " left on the table.");
+        }
+    }
+
+    private static void takeCards(BotEvent ev) {
+        String message = ev.event.getMessageContent().toLowerCase();
+
+        int[] cardIndices = getIndices(message.substring(6));
+
+        Hand cardsTaken = ev.engine.takeCardsFromTable(ev.user, cardIndices);
+        if (cardsTaken.isEmpty()) {
+            String cardsAvailable;
+            int tableSize = ev.engine.getTableCopy().size();
+            if (tableSize == 1) {
+                cardsAvailable = "is only 1";
+            } else {
+                cardsAvailable = "are only " + tableSize;
+            }
+            ev.event.getChannel().sendMessage("There " + cardsAvailable + " cards on the table.");
+            return;
+        }
+
+        // there aren't enough cards
+        if (cardsTaken.size() == 1) {
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " takes a card from the table:"
+                                    + cardsTaken.tabbedString());
+        } else {
+            ev.event.getChannel()
+                    .sendMessage(ev.user.getNicknameMentionTag() + " takes cards from the table:\n"
+                            + cardsTaken.tabbedString());
+        }
+
+        tellHand(ev, true);
+    }
+
+
+    private static void doBurn(BotEvent ev) {
         String message = ev.event.getMessageContent().toLowerCase();
 
         if (!ev.engine.isPlaying(ev.user)) {
@@ -567,7 +666,7 @@ public class ESOCardsBot {
     }
 
 
-    public static void cardsLeft(BotEvent ev) {
+    private static void cardsLeft(BotEvent ev) {
         String areRemaining;
         int cardsLeft = ev.engine.cardsLeft();
         if (cardsLeft == 0) {

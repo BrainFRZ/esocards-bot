@@ -127,6 +127,42 @@ public class BotEngine {
         return player.hand;
     }
 
+    Hand takeTopCardsFromTable(User user, int cards) throws EmptyShoeException {
+        Hand table = game.table();
+        int tableSize = table.size();
+        if (cards >= tableSize) {
+            throw new EmptyShoeException(cards, tableSize);
+        }
+
+        Player player = getPlayer(user);
+        Hand cardsTaken = new Hand(new ArrayList<Card>(table.subList(table.size()-cards, table.size())));
+        player.hand.addAll(cardsTaken);
+        for (int i = tableSize - 1; i >= tableSize - cards; i--) {  // Can't use removeAll because there may be
+            table.remove(i);                                        // duplicates if there are multiple decks in the
+        }                                                           // shoe. We only want to remove the top-most one.
+        return cardsTaken;
+    }
+
+    Hand takeCardsFromTable(User user, int[] indices) {
+        Hand table = game.table();
+        int tableSize = table.size();
+
+        Player player = getPlayer(user);
+        Hand cardsTaken = new Hand();
+        for (int i : indices) {
+            if (i > tableSize) {
+                return new Hand();
+            }
+            cardsTaken.add(table.get(i-1));
+        }
+        for (int i = 0; i < indices.length; i++) {
+            table.remove(indices[i] - i - 1);
+        }
+
+        player.hand.addAll(cardsTaken);
+        return cardsTaken;
+    }
+
 
     void reshoe() {
         game.reshoe();
@@ -186,13 +222,13 @@ public class BotEngine {
     }
 
 
-    public Hand getTable() {
+    public Hand getTableCopy() {
         return new Hand(game.table());
     }
 
     public Hand dealTable(final int cards) throws EmptyShoeException {
         game.dealTable(cards);
-        return getTable();
+        return getTableCopy();
     }
 
     public boolean clearTable() {
